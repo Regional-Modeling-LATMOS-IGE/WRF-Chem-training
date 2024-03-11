@@ -84,7 +84,7 @@ The parameter files, including the scripts to launch simulations, can be found t
 
 ## Run WPS
 
-In the *Exercise-1* folder, the file `jobscript_wps.sh` launches the preprocessing of initial and boundary condition data. If need be, adjust some of the paths in this script.
+In the *Exercise-1* folder, the file `jobscript_wps.sh` launches the preprocessing of initial and boundary condition data. If need be, adjust some of the paths in this script. Then use the command `oarsub -S ./jobscript_wps.sh`
 
 
 ## Run real
