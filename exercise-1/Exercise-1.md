@@ -14,7 +14,7 @@ Setup of a regional model domain over Europe, run a real WRF case for the dates 
 The WRF model requires initial and boundary conditions to start a simulation. These conditions provide the starting point for the model to simulate the evolution of the atmosphere over time. 
 
 ## Initial Conditions
-Initial conditions describe the state of the atmosphere at the beginning of the simulation period. They include variables such as temperature, humidity, wind speed, and direction at various levels in the atmosphere. 
+Initial conditions describe the state of the atmosphere at the beginning of the simulation period. They include variables such as temperature, humidity, wind speed and direction, at various levels in the atmosphere. 
 
 ## Lateral Boundary Conditions
 Boundary conditions specify how the atmosphere interacts with its surroundings at the edges of the simulation domain. They include information about the incoming flow of air, temperature, humidity, and other relevant variables at the boundaries of the model domain. Boundary conditions are often derived from global weather models or from observational data collected at locations surrounding the domain of interest.
