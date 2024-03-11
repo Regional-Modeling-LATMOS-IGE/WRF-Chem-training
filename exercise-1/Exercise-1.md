@@ -6,10 +6,9 @@ We recommend you watch this video before starting this exercise
 In this tutorial we will only work with Real cases.
 
 # Exercise objective 
-Setup of a regional model domain over Europe, run a real case for the dates 
-> 1 - 7 January 2019
+Setup of a regional model domain over Europe, run a real case for the dates 1 - 7 January 2019.
 
-INCLUDE SCREENSHOT OF DOMAIN HERE
+> INCLUDE SCREENSHOT OF DOMAIN HERE
 
 # WRF initial and boundary conditions 
 The WRF model requires initial and boundary conditions to start a simulation. These conditions provide the starting point for the model to simulate the evolution of the atmosphere over time. 
