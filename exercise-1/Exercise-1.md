@@ -58,7 +58,7 @@ The `namelist.wps` file is a configuration file used by the WRF Preprocessing Sy
   ```
 
 ## What is the WRF namelist?
-The 'namelist.wrf' file is a configuration file used `wrf.exe`. The `namelist.wrf` file contains various parameters and settings that control how the model runs, including domain setup, physics options, boundary conditions, output settings, and many other aspects. It essentially serves as the main input file for configuring WRF simulations.  Example of WRF namelist sections include
+The `namelist.wrf` file is a configuration file used `wrf.exe`. The `namelist.wrf` file contains various parameters and settings that control how the model runs, including domain setup, physics options, boundary conditions, output settings, and many other aspects. It essentially serves as the main input file for configuring WRF simulations.  Example of WRF namelist sections include
 
 - `&time_control` This section controls parameters related to time integration, such as the start and end times of the simulation, time step size, and output frequency.
 - `&domains` Defines parameters related to the model domains, including horizontal grid spacing, vertical levels, domain nesting, and boundary conditions.
