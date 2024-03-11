@@ -6,7 +6,7 @@ We recommend you watch this video before starting this exercise
 In this tutorial we will only work with Real cases.
 
 # Exercise objective 
-Setup of a regional model domain over Europe, run a real case for the dates 1 - 7 January 2019.
+Setup of a regional model domain over Europe, run a real WRF case for the dates 1 - 7 January 2019.
 
 > INCLUDE SCREENSHOT OF DOMAIN HERE
 
