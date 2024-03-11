@@ -36,16 +36,17 @@ The coupling of MOZART-MOSAIC 4 bin aerosol scheme is described at
 MOSAIC aerosol physics and chemistry are developed by a joint collaboration between PNNL and NCAR and the MOZART gas phase chemistry scheme is developed at NCAR.
 
 
+# Steps for running WRF and WRF-Chem
 
-# For more info on WRF and WRF-Chem
-# https://www2.mmm.ucar.edu/wrf/users/
-# For an introduction to the model,
-# https://www.youtube.com/watch?v=wzSu-343b-0
-#
-# The WRF-Chem model is run in 4 main steps. First, WPS (the WRF preprocessing
-# system), then real.exe (program creating the main wrf input and boundary
-# files), then additional WRF-Chem preprocessors for emissions and boundary
-# conditions, then wrf.exe (the WRF-Chem model). How to run these programs is
+The WRF-Chem model is run in 4 main steps. 
+- Running the WRF preprocessor: WPS (the WRF Preprocessing System)
+- Real: Creating the main wrf input and boundary files using real.exe
+
+- if running WRF-Chem then there is an addition step of running all additional WRF-Chem preprocessors for emissions and boundary
+ conditions
+- Run the WRF model using wrf.exe 
+
+- 
 # explained below.
 #
 # Before running this test case, you need to compile the following programs, or a
