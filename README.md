@@ -1,16 +1,27 @@
 # WRF-Chem-training
 
-9:00 AM - 9:30 AM: 
+Location: IGE, Building Maison Climat Planet (MCP), [Maison Climat Planète](https://maps.app.goo.gl/KaQYgSXwoWRBK5JK7)), Room 117/118
+
+## 8:30 AM - 9:00 AM
+Arrival, check in, and coffee
+
+## 9:00 AM - 9:30 AM
 Overview of the workshop objectives and agenda.
 Round table of introductions
 Pairing up trainers and trainees (working in groups of 2)
 
-9:30 AM - 10:00 AM: Introduction to WRF Model & training
+## 9:30 AM - 10:00 AM: Introduction to WRF Model & Training Setup
 - Introduction to WRF
 - Technical setup for the for the training (getting on Gricad / setting up tunnels / making sure you can see information on the cluster on your machine)
 
-10:00 AM - 12:00 PM: Start of Exercise #1
+## 10:00 AM - 12:00 PM: Start of Exercise #1
 (breaks as needed)
+
+## 12:00 PM - 1:00 PM: Lunch
+Provided on site
+
+## 12:00 PM - 1:00 PM: Lunch
+
 
 10:45 AM - 12:00 PM: Setting up WRF Simulations
 
