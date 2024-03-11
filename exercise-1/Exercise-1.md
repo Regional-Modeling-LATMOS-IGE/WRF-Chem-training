@@ -44,7 +44,7 @@ The main way you will set options and decide how you will use the WRF modeling s
 
 
 ## What is the WPS namelist?
-The *namelist.wps* file is a configuration file used by the WRF Preprocessing System (WPS) to set various parameters and options for preprocessing meteorological data before running the WRF model. the namelist.wps file is used as input for the three programs that make up the WPS
+The `namelist.wps` file is a configuration file used by the WRF Preprocessing System (WPS) to set various parameters and options for preprocessing meteorological data before running the WRF model. the namelist.wps file is used as input for the three programs that make up the WPS
 > ungrib.exe, metgrid.exe, and geogrid.exe
 
 *namelist.wps* files include sections such as
