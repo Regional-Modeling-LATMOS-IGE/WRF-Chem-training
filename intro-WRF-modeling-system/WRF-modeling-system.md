@@ -47,7 +47,7 @@ The WRF-Chem model is run in 4 main steps.
 - Run the WRF model using wrf.exe 
 
 # In order to complete this training
-Ensure you have a working / compiled version of the WRF/WRF-Chem model, ensure you have a compiled version of WPS that works for your WRF version.  **WRF-Chem only:** Ensure compiled all WRF-Chem preprocessors (mozbc, wesely, exo_coldens, megan_bio_emiss, fire_emis)
+Ensure you have a working / compiled version of the WRF/WRF-Chem model, ensure you have a compiled version of WPS that works for your WRF version.  **WRF-Chem only:** Ensure compiled all WRF-Chem preprocessors (mozbc, wesely, exo_coldens, megan_bio_emiss, fire_emis).  We will go through the steps to run WRF first, then the steps to run WRF-Chem after.
 
 # Recommendations
 We recommend using/running the WRF met-only exercises first (WRF without the chemistry) before moving on to running WRF-Chem tests/exercieses.  
