@@ -24,7 +24,7 @@ Boundary conditions specify how the atmosphere interacts with its surroundings a
 In order to run long simulations with changing surface properties (snow cover, sea ice, etc) we recommend you use the lower boundary condition option available in WRF.  
 To adjust or "fix" the lower boundary conditions to be those read in from the analyses/reanalyses in WRF, you typically modify parameters related to land surface properties and processes. This can be done by using WRF lower boundary condition options in the WRF namelist (see below).
 
-## What we use
+## Analyses for use 
 In this tutorial we will use initial conditions from ERA5 
 > https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-pressure-levels?tab=overview
 > https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels?tab=overview
