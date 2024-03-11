@@ -41,6 +41,8 @@ If you wish to explore a different domain, you need to adjust the parameters (ce
 # WRF nudging options 
 
 
+In this tutorial, the spectral nudging option is pre-set for you for the studied domain, but you should keep in mind that the associated options in the WRF parameter file `namelist.wrf` should be modified if you change the domain extent.
+
 # Namelists
 The main way you will set options and decide how you will use the WRF modeling system and preprocessing system is through namelists.
 
@@ -97,4 +99,5 @@ In the *Exercise-1* folder, the file `jobscript_wps.sh` launches the preprocessi
 
 ## Plot WRF output
 
-
+We have prepared python scripts that plot maps, time series of variables of interest for our simulation case. They can be found there: `/bettik/PROJECTS/pr-regionalchem/couetoup`
+Feel free to copy them on your home folder and modify them as you wish.
