@@ -21,7 +21,6 @@ Arrival, check in, and coffee
 
 ### 9:30h - 10:20h 
 - Introduction to WRF Model & Training Setup
-- Introduction to WRF
 - Technical setup for the for the training (getting on Gricad / setting up tunnels / making sure you can see information on the cluster on your machine)
 
 ### 10:20h - 12:00h
@@ -40,7 +39,7 @@ Continue with Exercise #1
 
 ### 15:00h - 17:00h
 - Continue with Exercise #1 for those who have not completed a WRF run
-- Or if completed, work on setting up your own domain for your case workign with a trainer
+- Or if completed, work on setting up your own domain for your case working with a trainer
 
 ### 17:00h - 18:00h
 Discussion, questions / answers,  wrap up
@@ -48,5 +47,41 @@ Discussion, questions / answers,  wrap up
 ### 19:00h
 Dinner
 
+
 ## Day 2 - 30 April 2024
+
+### 8:30h - 9:00h
+Arrival, and coffee
+
+### 9:00h - 9:30h
+- Overview of the WRF-Chem portion of the workshop objectives and agenda.
+- Round table of introductions
+- Pairing up trainers and trainees (working in groups of 2)
+
+### 9:30h - 10:20h 
+- Introduction to WRF-Chem Model & Training Setup
+- Reminder - all people who attend the training need to have attended day #1 for
+ 
+### 10:20h - 12:00h
+Start of Exercise #2
+- WRF-Chem pre processors
+- Running WRF-Chem
+
+### 12:00h - 13:00h
+Lunch provided on site
+
+### 13:00h - 15:00h
+Continue with Exercise #2
+- Running WRF-Chem
+- Plotting WRF-Chem output
+
+### 15:00h - 17:00h
+- Continue with Exercise #2 for those who have not completed a WRF-Chem run
+- Or if completed, work on setting up your own domain for your case working with a trainer
+
+### 17:00h - 18:00h
+Discussion, questions / answers,  wrap up
+
+
+
 
