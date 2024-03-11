@@ -20,7 +20,7 @@ Initial conditions describe the state of the atmosphere at the beginning of the 
 Boundary conditions specify how the atmosphere interacts with its surroundings at the edges of the simulation domain. They include information about the incoming flow of air, temperature, humidity, and other relevant variables at the boundaries of the model domain. Boundary conditions are often derived from global weather models or from observational data collected at locations surrounding the domain of interest.
 
 ## Lower Boundary Conditions
-In order to run long simulations with changing surface properties (snow cover, sea ice, etc) we recommend you use the lower boundary condition option available in WRF.  
+In order to run long simulations with changing surface properties (snow cover, sea ice, sea surface temperature, etc) we recommend you use the lower boundary condition option available in WRF.  
 To adjust or "fix" the lower boundary conditions to be those read in from the analyses/reanalyses in WRF, you typically modify parameters related to land surface properties and processes. This can be done by using WRF lower boundary condition options in the WRF namelist (see below).
 
 ## Analyses for use 
@@ -33,7 +33,10 @@ or from FNL
 
 
 # Pre-defined model domain
-We have pre defined a model domain for you, you can find this on Gricad here
+We have pre defined a model domain for you, at 50km resolution, spanning most of Europe. You can find the corresponding `namelist.wps` on dahu here: 
+> /bettik/PROJECTS/pr-regionalchem/laperer/WRF_training/Exercise-1/namelist.wps
+
+If you wish to explore a different domain, you need to adjust the parameters (center latitude and longitude, number of grid cells, resolution...) in the `namelist.wps` file.
 
 # WRF nudging options 
 
@@ -73,9 +76,24 @@ The `namelist.wrf` file is a configuration file used `wrf.exe`. The `namelist.wr
 
 # Tutorial activities 
 
+For this exercise, the WPS and WRF codes have already been compiled. To retrieve these working version of the code, copy these repositories in your home folder:
+- WPS: `/bettik/PROJECTS/pr-regionalchem/laperer/WRF_training/src/WPS/`
+- WRF: `/bettik/PROJECTS/pr-regionalchem/laperer/WRF_training/src/WRF/`
+
+The parameter files, including the scripts to launch simulations, can be found there: */bettik/PROJECTS/pr-regionalchem/laperer/WRF_training/Exercise-1/*. Copy this repository on your home folder as well.
+
 ## Run WPS
 
+In the *Exercise-1* folder, the file `jobscript_wps.sh` launches the preprocessing of initial and boundary condition data. If need be, adjust some of the paths in this script.
+
+
+## Run real
+
+
+
 ## Run WRF
+
+
 
 ## Plot WRF output
 
