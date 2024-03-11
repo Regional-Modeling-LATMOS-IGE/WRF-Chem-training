@@ -14,16 +14,16 @@ Times are in local Grenoble time (CEST)
 Arrival, check in, and coffee
 
 ### 9:00h - 9:30h
-Overview of the workshop objectives and agenda.
-Round table of introductions
-Pairing up trainers and trainees (working in groups of 2)
+- Overview of the workshop objectives and agenda.
+- Round table of introductions
+- Pairing up trainers and trainees (working in groups of 2)
 
-### 9:30h - 10:00h 
+### 9:30h - 10:20h 
 - Introduction to WRF Model & Training Setup
 - Introduction to WRF
 - Technical setup for the for the training (getting on Gricad / setting up tunnels / making sure you can see information on the cluster on your machine)
 
-### 10:00 AM - 12:00 PM 
+### 10:20 AM - 12:00 PM 
 Start of Exercise #1
 - Running WPS
 - Running WRF
