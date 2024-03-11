@@ -71,10 +71,12 @@ The 'namelist.wrf' file is a configuration file used `wrf.exe`. The `namelist.wr
   TO DO - put actual namelist here we plan to use for WRF in a code box
   ```
 
-# ACTIVITY: Run WPS
+# Tutorial activities 
 
-# ACTIVITY: Run WRF
+## Run WPS
 
-# ACTIVITY: Plot WRF output
+## Run WRF
+
+## Plot WRF output
 
 
