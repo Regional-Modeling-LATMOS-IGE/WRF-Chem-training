@@ -31,7 +31,7 @@ or from FNL
 > https://rda.ucar.edu/datasets/ds083.2/
 
 
-# Pre defined model domain
+# Pre-defined model domain
 We have pre defined a model domain for you, you can find this on Gricad here
 
 # WRF nudging options 
