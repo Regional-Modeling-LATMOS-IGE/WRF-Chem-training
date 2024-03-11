@@ -39,27 +39,14 @@ MOSAIC aerosol physics and chemistry are developed by a joint collaboration betw
 # Steps for running WRF and WRF-Chem
 
 The WRF-Chem model is run in 4 main steps. 
-- Running the WRF preprocessor: WPS (the WRF Preprocessing System)
+- Running the WRF preprocessor: WPS (the WRF Preprocessing System), which consists of mutiple programs
 - Real: Creating the main wrf input and boundary files using real.exe
-
-- if running WRF-Chem then there is an addition step of running all additional WRF-Chem preprocessors for emissions and boundary
+- **WRF-Chem only** running all additional WRF-Chem preprocessors for emissions and boundary
  conditions
 - Run the WRF model using wrf.exe 
 
-- 
-# explained below.
-#
-# Before running this test case, you need to compile the following programs, or a
-# compiled version of these programs need to be copied to your own space:
-# - WRF-chem model (WRF model with chemistry enabled)
-# - WPS (WRF preprocessor) compiled for your WRF version
-# - WRF-Chem preprocessors (mozbc, wesely, exo_coldens, megan_bio_emiss, fire_emis)
-# You can find compilation instructions in WRF-compile-scripts
-#
-# I also recommend going through the WRF online tutorial before running this
-# test, to better understand how the model works. I also recommend running the
-# WRF met-only test in wrf-met/ first (WRF without the chemistry)
+# In order to complete this training
+Ensure you have a working / compiled version of the WRF/WRF-Chem model, ensure you have a compiled version of WPS that works for your WRF version.  **WRF-Chem only** Ensure compiled all WRF-Chem preprocessors (mozbc, wesely, exo_coldens, megan_bio_emiss, fire_emis)
 
-Create a directory for storing WRF output on your /data/ space, for example
- mkdir /data/$(whoami)/WRF
- mkdir /data/$(whoami)/WRF/WRF_OUTPUT
+# Recommendations
+We recommend using/running the WRF met-only exercises first (WRF without the chemistry) before moving on to running WRF-Chem tests/exercieses.  
