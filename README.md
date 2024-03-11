@@ -1,6 +1,6 @@
 # WRF-Chem-training
 
-Location: IGE, Building Maison Climat Planet (MCP), [Maison Climat Planète](https://maps.app.goo.gl/KaQYgSXwoWRBK5JK7)), Room 117/118
+Location: IGE, [Maison Climat Planète](https://maps.app.goo.gl/KaQYgSXwoWRBK5JK7), Room 117/118
 Times are in local Grenoble time (CEST)
 
 ## Before arriving:
