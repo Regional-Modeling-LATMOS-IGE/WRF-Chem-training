@@ -4,7 +4,7 @@ The Weather Research and Forecasting Model (WRF) is a numerical weather predicti
 
 ## For more info on WRF and WRF-Chem
 >  https://www2.mmm.ucar.edu/wrf/users/
-## For an introduction to the model,
+## For an introduction to the model, please watch this before you attend the training
 >   https://www.youtube.com/watch?v=wzSu-343b-0
 
 # WRF code distribution
@@ -41,12 +41,12 @@ MOSAIC aerosol physics and chemistry are developed by a joint collaboration betw
 The WRF-Chem model is run in 4 main steps. 
 - Running the WRF preprocessor: WPS (the WRF Preprocessing System), which consists of mutiple programs
 - Real: Creating the main wrf input and boundary files using real.exe
-- **WRF-Chem only** running all additional WRF-Chem preprocessors for emissions and boundary
+- **WRF-Chem only:** running all additional WRF-Chem preprocessors for emissions and boundary
  conditions
 - Run the WRF model using wrf.exe 
 
 # In order to complete this training
-Ensure you have a working / compiled version of the WRF/WRF-Chem model, ensure you have a compiled version of WPS that works for your WRF version.  **WRF-Chem only** Ensure compiled all WRF-Chem preprocessors (mozbc, wesely, exo_coldens, megan_bio_emiss, fire_emis)
+Ensure you have a working / compiled version of the WRF/WRF-Chem model, ensure you have a compiled version of WPS that works for your WRF version.  **WRF-Chem only:** Ensure compiled all WRF-Chem preprocessors (mozbc, wesely, exo_coldens, megan_bio_emiss, fire_emis)
 
 # Recommendations
 We recommend using/running the WRF met-only exercises first (WRF without the chemistry) before moving on to running WRF-Chem tests/exercieses.  
