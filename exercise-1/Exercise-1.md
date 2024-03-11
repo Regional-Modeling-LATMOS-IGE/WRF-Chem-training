@@ -5,7 +5,7 @@ We recommend you watch this video before starting this exercise
 
 In this tutorial we will only work with Real cases.
 
-# Exercise obejctive 
+# Exercise objective 
 Setup of a regional model domain over Europe, run a real case for the dates 
 > 1 - 7 January 2019
 
