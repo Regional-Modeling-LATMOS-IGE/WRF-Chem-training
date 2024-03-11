@@ -38,7 +38,7 @@ Continue with Exercise #1
 - Plotting WRF output
 
 ### 15:00h - 17:00h
-- Contiue with Excerise #1
+- Continue with Excerise #1 for those who have not completed a WRF run
 - Or if completed, work on setting up your own domain for your case workign with a trainer
 
 ### 17:00h - 18:00h
