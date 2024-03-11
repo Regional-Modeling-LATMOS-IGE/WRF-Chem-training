@@ -25,15 +25,21 @@ Pairing up trainers and trainees (working in groups of 2)
 
 ### 10:00 AM - 12:00 PM 
 Start of Exercise #1
+- Running WPS
+- Running WRF
+- Getting your first `wrfout` files
 
 ### 12:00h - 13:00h
 Lunch provided on site
 
 ### 13:00h - 15:00h
 Continue with Exercise #1
+- Running WRF
+- Plotting WRF output
 
 ### 15:00h - 17:00h
-Adaption of Exerise #1 for your cases
+- Contiue with Excerise #1
+- Or if completed, work on setting up your own domain for your case workign with a trainer
 
 ### 17:00h - 18:00h
 Discussion, questions / answers,  wrap up
