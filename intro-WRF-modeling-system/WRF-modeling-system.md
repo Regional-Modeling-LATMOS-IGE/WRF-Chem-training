@@ -29,6 +29,7 @@ The specific setup for the chemistry part of WRF-Chem presented here is MOZART-4
 with MOSAIC 4-bin aerosols, original publication of this aerosol model at
 
 >  https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2007jd008782
+
 The coupling of MOZART-MOSAIC 4 bin aerosol scheme is described at
 
 > *GET DOC WHEN NCAR SITE IS BACK UP*
