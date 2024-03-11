@@ -21,7 +21,7 @@ WRF-Chem is managed by NOAA and the main page for information is found at
 >  https://ruc.noaa.gov/wrf/wrf-chem/ 
 
 ## WRF and WRF-Chem are modular modeling systems
-There are mutliple options for treating processes in the atmosphere, coupling with the land/ocean/ice surfaces, and atmospheric chemistry (trace gas and aerosols).  We will present one model setup that we frequenly use at IGE/LATMOS.  However, other model setups are possible using other atmopserhic, surface, and atmospheric chemsitry setups.
+There are mutliple options for treating processes in the atmosphere, coupling with the land/ocean/ice surfaces, and atmospheric chemistry (trace gas and aerosols).  We will present one model setup that we frequenly use at IGE/LATMOS.  However, other model setups are possible using other atmospheric, surface, and atmospheric chemistry setups.
 
 The specific setup for the chemistry part of WRF-Chem presented here is MOZART-4 gas-phase chemistry
 > https://gmd.copernicus.org/articles/3/43/2010/
