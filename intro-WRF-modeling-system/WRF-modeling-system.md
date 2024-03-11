@@ -4,13 +4,18 @@ The Weather Research and Forecasting Model (WRF) is a numerical weather predicti
 # WRF code distribution
 WRF is distrubted at: https://github.com/wrf-model/WRF
 The current version of WRF and WRF-Chem are distributed together, if you are running WRF vs. WRF-Chem depends on how you compile the model and your WRF namelist (main input file) and other input files provided.
-The current of the WRF modeling system - as of 11 March 2024 is 4.5.2.  All information on the WRF modleing system including user mailing lists, documentation, and support from NCAR the main model developer for WRF dynamics is found at: https://www2.mmm.ucar.edu/wrf/users/download/get_source.html  
-WRF-Chem is managed by NOAA in the USA and the main page for information is: https://ruc.noaa.gov/wrf/wrf-chem/
+The current of the WRF modeling system - as of 11 March 2024 is 4.5.2.  
+
+All information on the WRF modleing system including user mailing lists, documentation, and support from NCAR the main model developer for WRF dynamics is found at: https://www2.mmm.ucar.edu/wrf/users/download/get_source.html  
+WRF-Chem is managed by NOAA and the main page for information is: https://ruc.noaa.gov/wrf/wrf-chem/
+
+WRF and WRF-Chem are modular modeling systems, which mutliple options for treating processes in the atmosphere, coupling with the land/ocean/ice surfaces, and atmospheric chemistry (trace gas and aerosols).  We will present one model setup that we frequenly use at IGE/LATMOS.  However, other model setups are possible using other atmopserhic, surface, and atmospheric chemsitry setups.
+
+The specific setup for the chemistry part of WRF-Chem presented here is MOZART gas-phase chemistry with MOSAIC aerosols (https://www2.acom.ucar.edu).  MOSAIC aerosol physics and chemistry are developed by a joint collaboration between PNNL and NCAR and the MOZART gas phase chemistry scheme is developed at NCAR.
 
 
-
-#---- Instructions for running a WRFChem4 Arctic simulation on spirit with
-# MOZART-MOSAIC-AQ-4bin chemistry/aerosols
+%#---- Instructions for running a WRFChem4 Arctic simulation on spirit with
+%# MOZART-MOSAIC-AQ-4bin chemistry/aerosols
 #
 # Louis Marelle, 2023/12/15
 #
