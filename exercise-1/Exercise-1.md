@@ -67,6 +67,9 @@ The 'namelist.wrf' file is a configuration file used `wrf.exe`. The `namelist.wr
 - `&dynamics` Controls settings related to the numerical integration scheme, such as advection schemes and time integration methods.
 - `&bdy_control` Specifies boundary condition options, including lateral boundary conditions and how they are updated.
 
+ ```
+  TO DO - put actual namelist here we plan to use for WRF in a code box
+  ```
 
 # ACTIVITY: Run WPS
 
