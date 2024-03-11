@@ -24,7 +24,7 @@ Arrival, check in, and coffee
 - Introduction to WRF
 - Technical setup for the for the training (getting on Gricad / setting up tunnels / making sure you can see information on the cluster on your machine)
 
-### 10:20 AM - 12:00 PM 
+### 10:20h - 12:00h
 Start of Exercise #1
 - Running WPS
 - Running WRF
@@ -39,13 +39,13 @@ Continue with Exercise #1
 - Plotting WRF output
 
 ### 15:00h - 17:00h
-- Continue with Excerise #1 for those who have not completed a WRF run
+- Continue with Exercise #1 for those who have not completed a WRF run
 - Or if completed, work on setting up your own domain for your case workign with a trainer
 
 ### 17:00h - 18:00h
 Discussion, questions / answers,  wrap up
 
-### 19h
+### 19:00h
 Dinner
 
 ## Day 2 - 30 April 2024
