@@ -36,7 +36,7 @@ or from FNL
 We have pre defined a model domain for you, at 50km resolution, spanning most of Europe. You can find the corresponding `namelist.wps` on dahu here: 
 > /bettik/PROJECTS/pr-regionalchem/laperer/WRF_training/Exercise-1/namelist.wps
 
-If you wish to explore a different domain, you need to adjust the parameters (center latitude and longitude, number of grid cells, resolution...) in the `namelist.wps` file.
+If you wish to explore a different domain, you need to adjust the parameters (center latitude and longitude, number of grid cells, resolution...) in the `namelist.wps` file. But for the purpose of this training, we recommend keeping the proposed domain.
 
 # WRF nudging options 
 
