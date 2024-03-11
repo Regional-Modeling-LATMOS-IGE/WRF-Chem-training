@@ -1,1 +1,3 @@
-G
+- get a gricad account:
+- join the pr_regionalchel project:
+- check access:
