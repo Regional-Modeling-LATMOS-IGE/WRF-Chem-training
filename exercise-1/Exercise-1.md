@@ -9,12 +9,18 @@ In this tutorial we will only work with Real cases.
 Setup of a regional model domain over Europe, run a real case for the dates 
 > 1 - 7 January 2019
 
+# WRF initial and boundary conditions 
+Define lateral and lower boundary condition options, upper boundary condition for WRF-Chem only
+
+# Pre defined model domain
+We have pre defined a model domain for you, you can find this on Gricad here
+
+# WRF nudging options 
+
+
 # Namelists
 The main way you will set options and decide how you will use the WRF modeling system and preprocessing system is through namelists.
 
-# WRF initial and boundary conditions (lateral and lower boundary condition options, upper boundary condition for WRF-Chem only)
-
-# WRF nudging options 
 
 ## What is the WPS namelist?
 > 
@@ -22,7 +28,5 @@ The main way you will set options and decide how you will use the WRF modeling s
 ## What is the WRF namelist?
 > The WRF namelist is the input file is used for both the real.exe and wrf.exe executables.  We have provided you an example WRF namelist with the following options chosen:
 
-# Pre defined model domain
-We have pre defined a model domain for you, you can find this on Gricad here
 
 
