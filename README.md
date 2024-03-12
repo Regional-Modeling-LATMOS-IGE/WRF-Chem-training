@@ -75,11 +75,11 @@ Continue with Exercise #2
 - Running WRF-Chem
 - Plotting WRF-Chem output
 
-### 15:00h - 17:00h
+### 15:00h - 16:30h
 - Continue with Exercise #2 for those who have not completed a WRF-Chem run
 - Or if completed, work on setting up your own domain for your case working with a trainer
 
-### 17:00h - 18:00h
+### 16:30h - 17:00h
 Discussion, questions / answers,  wrap up
 
 
