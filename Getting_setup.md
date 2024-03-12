@@ -12,6 +12,8 @@
 
 5. Before coming to the training do the following on dahu.ciment! It takes time and cannot be done upon arriving.
 
-    ``` source /applis/site/guix-start.sh ```
+```
+   source /applis/site/guix-start.sh
+```
 
   
