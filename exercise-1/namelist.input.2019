@@ -28,7 +28,7 @@
  /
 
  &domains
- time_step                           = 200
+ time_step                           = 300
  time_step_fract_num                 = 0,
  time_step_fract_den                 = 1,
  max_dom                             = 1,
@@ -50,7 +50,7 @@
  feedback                            = 0,
  smooth_option                       = 0
  eta_levels                          = 1.0, 0.997938, 0.995876, 0.993815, 0.991193, 0.988572, 0.985951, 0.982638, 0.979326, 0.976014, 0.971862, 0.967710, 0.963557, 0.958403, 0.953248, 0.948093, 0.941770, 0.935447, 0.929124, 0.921480, 0.913835, 0.906191, 0.897108, 0.888025, 0.878942, 0.868364, 0.857786, 0.847208, 0.835165, 0.823121, 0.811078, 0.797701, 0.784325, 0.770949, 0.7275254, 0.6817554, 0.6345036, 0.5860305, 0.5408237, 0.4988169, 0.4597835, 0.4235129, 0.3898098, 0.3584922, 0.3293914, 0.3023505, 0.2772237, 0.2538754, 0.2321797, 0.2120198, 0.1932869, 0.17588, 0.1597051, 0.1446752, 0.1307091, 0.1177316, 0.1056727, 0.09446742, 0.08405523, 0.07438002, 0.06538968, 0.05703574, 0.0492731, 0.04205992, 0.03535732, 0.02912915, 0.02334184, 0.01796415, 0.01296716, 0.008323823, 0.004009195, 0.0
- use_adaptive_time_step              = .true.,
+ use_adaptive_time_step              = .false.,
  step_to_output_time                 = .true.,
  target_cfl                          = 1.0,1.0,1.0,
  target_hcfl                         = 1.0,1.0,1.0,
@@ -72,7 +72,6 @@
  radt                                = 5,    30,    30,
  progn                               = 1, 1,
  icloud                              = 1
-!TODO: !lm check that this is included in the released WRF version:
 ! o3input                             = 3,
 ! Boundary layer
 ! 5 for MYNN2 (sfclay 5, 2 or 1), 1 for YSU (sfclay 1), 2 for MYJ (sfclay 2) 
@@ -96,29 +95,12 @@
  tmn_update                          = 1
  lagday                              = 150
  fractional_seaice                   = 1
-! Should be used for polar runs
- seaice_albedo_opt                   = 2
- seaice_albedo_default               = 0.82
- seaice_snowdepth_opt                = 0
- seaice_snowdepth_max                = 10.0
- seaice_snowdepth_min                = 0.001
- seaice_thickness_opt                = 1
- seaice_thickness_default            = 3.0
 ! Cumulus
  cu_physics                          = 0,   1,    1,
  cudt                                = 0,     0,     0,
  cu_diag                             = 0,
  shallowcu_forced_ra                 = .false., .true., .true.,
  cu_rad_feedback                     = .false., .true., .true.,
-! numBins                             = 21,
-! thBinSize                           = 0.1,
-! rBinSize                            = 1.0e-4,
-! minDeepFreq                         = 0.333,
-! minShallowFreq                      = 1.0e-2
-! shcu_aerosols_opt                   = 2,
-! Lightning
-! lightning_option                    = 11,
-! lightning_dt                        = 0.,
  /
 
  &dynamics
