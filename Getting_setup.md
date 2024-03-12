@@ -10,7 +10,8 @@
 - connect to a cluster : ssh username@dahu.univ-grenoble-alpes.fr
 - if it is your first time follow https://gricad-doc.univ-grenoble-alpes.fr/en/hpc/howtos/mpi/
 
-- before coming to the training do the following! It takes time and cannot be done upon arriving.
+5. Before coming to the training do the following on dahu.ciment! It takes time and cannot be done upon arriving.
+
     ``` source /applis/site/guix-start.sh ```
 
   
