@@ -9,6 +9,7 @@
 - connect to the “bastion” : ssh username@trinity.univ-grenoble-alpes.fr
 - connect to a cluster : ssh username@dahu.univ-grenoble-alpes.fr
 - if it is your first time follow https://gricad-doc.univ-grenoble-alpes.fr/en/hpc/howtos/mpi/
+- For more information on doing scientific calculations on dahu see https://github.com/IGE-numerique/ige-calcul/blob/main/clusters/Gricad/dahu.md 
 
 5. Before coming to the training do the following on dahu.ciment! It takes time and cannot be done upon arriving.
 
