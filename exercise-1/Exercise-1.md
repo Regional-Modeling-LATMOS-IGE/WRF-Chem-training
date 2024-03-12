@@ -8,7 +8,9 @@ In this tutorial we will only work with Real cases.
 # Exercise objective 
 Setup of a regional model domain over Europe, run a real WRF case for the dates 1 - 7 January 2019.
 
-> INCLUDE SCREENSHOT OF DOMAIN HERE
+> INCLUDE SCREENSHOT OF DOMAIN HERE!
+> [First_run_domain](https://github.com/Regional-Modeling-LATMOS-IGE/WRF-Chem-training/assets/63862293/8767e402-27b4-41e4-b4e0-bb8215b0d41a)
+
 
 # WRF initial and boundary conditions 
 The WRF model requires initial and boundary conditions to start a simulation. These conditions provide the starting point for the model to simulate the evolution of the atmosphere over time. 
