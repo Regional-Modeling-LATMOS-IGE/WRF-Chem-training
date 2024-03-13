@@ -6,31 +6,28 @@
 - https://gricad-doc.univ-grenoble-alpes.fr/en/hpc/connexion/
 
 4. Checking access:
-- connect to the “bastion” : ssh username@trinity.univ-grenoble-alpes.fr
-- connect to a cluster : ssh username@dahu.univ-grenoble-alpes.fr
+   Once you created you perseus account, you should have your "perseus-login" which will be used for configuring your access in the next steps
+- Make sure that you have access to the cluster
+   - connect to the “bastion” : ssh  perseus-login@trinity.u-ga.fr
+   - and then connect to a the frontnode of the cluster : ssh f-dahu
 - if it is your first time follow https://gricad-doc.univ-grenoble-alpes.fr/en/hpc/howtos/mpi/
-- For more information on doing scientific calculations on dahu see https://github.com/IGE-numerique/ige-calcul/blob/main/clusters/Gricad/dahu.md 
+- For more information on connecting and doing scientific calculations on dahu see https://github.com/IGE-numerique/ige-calcul/blob/main/clusters/Gricad/dahu.md 
 
-5. Before coming to the training do the following on dahu.ciment! It takes time and cannot be done upon arriving.
 
-```
-   source /applis/site/guix-start.sh
-```
-
-6. Configure your SSH key access setup (Documentation : https://gricad-doc.univ-grenoble-alpes.fr/en/hpc/connexion/)
+5. Configure your SSH key access setup (Documentation : https://gricad-doc.univ-grenoble-alpes.fr/en/hpc/connexion/)
 
   - Generate ssh key pair (You only need to do it once) :
       ```
-      ssh-keygen
+      ssh-keygen -t rsa
       ```
-      You will have to specify the file where the keys will be generated and a password.
+      Don't put any passwords, just tape the Enter command twice
     
   - Copy your public key to rotule and trinity :
       ```
-      ssh-copy-id -i </the/path/to/your/key> <your-perseus-login>@rotule.univ-grenoble-alpes.fr
+      ssh-copy-id  perseus-login@rotule.u-ga.fr
       ```
       ```
-      ssh-copy-id -i </the/path/to/your/key> <your-perseus-login>@trinity.univ-grenoble-alpes.fr
+      ssh-copy-id  perseus-login@trinity.u-ga.fr
       ```
   - Configure your config file for ssh connection to dahu :
 
@@ -40,19 +37,19 @@ Host *
   ServerAliveInterval 30
 
 Host *.ciment
-  User <perseus-login>
-  ProxyCommand ssh -q <your-perseus-login>@access-gricad.univ-grenoble-alpes.fr "nc -w 60 `basename %h .ciment` %p"
+  User perseus-login
+  ProxyCommand ssh -q perseus-login@access-gricad.univ-grenoble-alpes.fr "nc -w 60 `basename %h .ciment` %p"
 ```
   - Then you can add your public key to dahu :
 ```
-ssh-copy-id -i </the/path/to/your/key> <your-perseus-login>@dahu.ciment
+ssh-copy-id  dahu.ciment
 ```
   - You should now be able to connect to dahu using :
 ```
 ssh dahu.ciment
 ```
 
-7. Launch a jupyter notebook on a node
+6. Launch a jupyter notebook on a node
 
   - Jupyter installation : After connecting to dahu compute the following command lines :
     ```
