@@ -32,22 +32,22 @@
   - Configure your config file for ssh connection to dahu :
 
       Add the following lines to your .ssh/config file
-```
-Host *
-  ServerAliveInterval 30
+      ```
+      Host *
+        ServerAliveInterval 30
 
-Host *.ciment
-  User perseus-login
-  ProxyCommand ssh -q perseus-login@access-gricad.univ-grenoble-alpes.fr "nc -w 60 `basename %h .ciment` %p"
-```
+      Host *.ciment
+        User perseus-login
+        ProxyCommand ssh -q perseus-login@access-gricad.univ-grenoble-alpes.fr "nc -w 60 `basename %h .ciment` %p"
+      ```
   - Then you can add your public key to dahu :
-```
-ssh-copy-id  dahu.ciment
-```
+    ```
+    ssh-copy-id  dahu.ciment
+    ```
   - You should now be able to connect to dahu using :
-```
-ssh dahu.ciment
-```
+    ```
+    ssh dahu.ciment
+    ```
 
 6. Launch a jupyter notebook on a node
 
@@ -66,6 +66,31 @@ ssh dahu.ciment
     ```
     ```
     nix-env -i -f ~/python.nix
+    ```
+  - Set-up python packages (see [documentation](https://gricad-doc.univ-grenoble-alpes.fr/en/hpc/softenv/nix/)):
+    In the same terminal than previous commands,
+    ```
+    nano ~/.config/nixpkgs/config.nix
+    ```
+    You should open a file structured as follow :
+    ```
+    # Python environment
+    pythonEnv = pkgs.python3.withPackages (ps: with ps; [
+
+          #################################################
+          # You can list your python packages below and
+          # install a python environement with:
+          #      nix-env -f "<nixpkgs>" -iA pythonEnv
+          #################################################
+          numpy ipython virtualenv pip notebook
+    ```
+    Add to the line with package names : "numpy ipython virtualenv pip notebook" the python package you need. For this training, you can add those package :
+    ```
+    numpy ipython virtualenv pip notebook xarray matplotlib cartopy
+    ```
+    Then download your new python environement :
+    ```
+    ix-env -f "<nixpkgs>" -iA pythonEnv
     ```
   - Jupyter configuration :
     ```
