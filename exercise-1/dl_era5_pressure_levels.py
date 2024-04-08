@@ -23,7 +23,6 @@ for iyear in range(STARTYEAR,ENDYEAR+1):
   for imonth in range(STARTMONTH,ENDMONTH+1):
     era5month = str(imonth).zfill(2)
     ndays_in_month = monthrange(int(era5year),imonth)[1]
-    #ndays_in_month = 2 # RLA
     for iday in range(1,ndays_in_month+1):
       era5day = str(iday).zfill(2)
       era5filename = 'e5.pl.'+era5year+era5month+era5day+'.grib'
