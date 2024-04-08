@@ -9,7 +9,11 @@ Please copy/paste this folder to your home directory on dahu, from where you wil
 
 ## Input files
 
-Input files from ERA5 and FNL for this exercise have been pre-downloaded so you do not have to deal with the acquisition in this exercise, although this is something you should be able to do in the future. FNL can be downloaded from `https://rda.ucar.edu/datasets/ds083.2/`. Example Python scripts for downloading ERA5 data on sufrace and pressure level needed to drive WPS are provided here as `dl_era5_surface.py` and `dl_era5_pressure_levels.py`. 
+Input files from ERA5 and FNL for this exercise have been pre-downloaded so you do not have to deal with the acquisition in this exercise, although this is something you should be able to do in the future. 
+
+FNL can be downloaded from `https://rda.ucar.edu/datasets/ds083.2/`. 
+
+Example Python scripts for downloading ERA5 data on sufrace and pressure level needed to drive WPS are provided here as `dl_era5_surface.py` and `dl_era5_pressure_levels.py`. 
 
 The data can be found here: `/bettik/PROJECTS/pr-regionalchem/laperer/WRF_INPUT/met_data/`
 
