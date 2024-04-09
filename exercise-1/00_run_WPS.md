@@ -20,7 +20,7 @@ Other input files, such as geographical surface information are also already on 
 
 ## Paths and namelist options
 
-The `namelist.wps` parameter file defines the domain that will be run including the number of grid cells, the nested domains if any, the central lat/lon coordinates, the projection. The path to geographical input data is also given in the file. For the purpose of the exercise there is nothing to modify in this file but please have a look at it.
+The `namelist.wps` parameter file defines the domain that will be run including the spatial resolution, the number of grid cells, the nested domains if any, the central lat/lon coordinates, the projection. The path to geographical input data is also given in the file. For the purpose of the exercise there is nothing to modify in this file but please have a look at it.
 
 In the `jobscript_wps.sh` script, you need to update a few paths for where to store the output data (OUTDIR_ROOT, SCRATCHDIR_ROOT, SUBMIT_DIR), and give a name to your simulation case (CASENAME). You can also adjust in this file the run dates and the allocated computing power.
 
