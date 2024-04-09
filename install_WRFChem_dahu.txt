@@ -1,0 +1,181 @@
+Installing WRF, WRF-Chem, and WPS on Dahu
+
+# Create directories for WRF required libraries
+mkdir ~/tools
+mkdir ~/tools/lib
+export TOOLDIR=~/tools/lib/
+mkdir $TOOLDIR/include
+mkdir $TOOLDIR/lib
+mkdir $TOOLDIR/bin
+
+# Initialize environment variables
+export CC=gcc
+export CXX=g++
+export FC=gfortran
+export F77=gfortran
+export JASPERLIB=$TOOLDIR/lib
+export JASPERINC=$TOOLDIR/include
+export PATH=$TOOLDIR/bin:$PATH
+export LD_LIBRARY_PATH=$TOOLDIR/lib:$LD_LIBRARY_PATH
+export FCFLAGS=-m64
+export FFLAGS=-m64
+export LDFLAGS=-L$TOOLDIR/lib
+export CPPFLAGS=-I$TOOLDIR/include
+export YACC="$TOOLDIR/bin/yacc -d"
+export FLEX_LIB_DIR="$TOOLDIR/lib"
+export NETCDF="$TOOLDIR/"
+
+
+#---- Install librairies for WRF
+
+# Install zlib
+wget -c https://www.zlib.net/zlib-1.3.1.tar.gz
+tar -xvzf zlib-1.3.1.tar.gz
+cd zlib-1.3.1
+./configure --prefix=$TOOLDIR
+make
+make install
+cd ..
+
+# Install HDF5
+wget -c https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.3/src/hdf5-1.14.3.tar.gz
+tar -xvzf hdf5-1.14.3.tar.gz
+cd hdf5-1.14.3/
+./configure --prefix=$TOOLDIR --with-zlib=$TOOLDIR --enable-hl --enable-fortran
+make
+make install
+export HDF5=$TOOLDIR
+cd ..
+
+# Install NetCDF-C
+wget https://downloads.unidata.ucar.edu/netcdf-c/4.9.2/netcdf-c-4.9.2.tar.gz
+tar -xvzf netcdf-c-4.9.2.tar.gz
+cd netcdf-c-4.9.2
+./configure --prefix=$TOOLDIR --disable-dap --disable-byterange --disable-libxml2
+make
+make install
+make check
+cd ..
+
+# Install NetCDF-FORTRAN
+wget https://downloads.unidata.ucar.edu/netcdf-fortran/4.6.1/netcdf-fortran-4.6.1.tar.gz
+tar -xvzf netcdf-fortran-4.6.1.tar.gz 
+cd netcdf-fortran-4.6.1/
+./configure --prefix=$TOOLDIR --disable-shared
+make
+make install
+cd ..
+
+# Install MPI
+wget -c http://www.mpich.org/static/downloads/3.0.4/mpich-3.0.4.tar.gz
+tar -xvzf mpich-3.0.4.tar.gz
+cd mpich-3.0.4/
+export FFLAGS="-m64 -w -fallow-argument-mismatch -O2" export FCGLAGS=-m64
+export CPPFLAGS="-I$TOOLDIR/include -fcommon"
+./configure --prefix=$TOOLDIR
+make
+make install
+cd ..
+
+# Install libpng
+wget -c https://sourceforge.net/projects/libpng/files/libpng16/1.6.40/libpng-1.6.40.tar.gz
+tar -xvzf libpng-1.6.37.tar.gz
+cd libpng-1.6.37/
+./configure --prefix=$TOOLDIR
+make
+make install
+cd ..
+
+# Install Jasper
+wget https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compile_tutorial/tar_files/jasper-1.900.1.tar.gz
+tar -xvzf jasper-1.900.1.tar.gz
+cd jasper-1.900.1/
+./configure --prefix=$TOOLDIR
+make
+make install
+cd ..
+
+#--- Configure and compile WRF
+export EM_CORE=1
+export NMM_CORE=0
+export WRF_CHEM=0
+export WRF_KPP=0
+export HDF5_DISABLE_VERSION_CHECK=1
+export WRFIO_NCD_NO_LARGE_FILE_SUPPORT=0
+export WRFIO_NCD_LARGE_FILE_SUPPORT=1
+./clean -a
+./configure
+Choose options 34 then 1
+./compile em_real 2>&1 | tee compile.log
+cd ..
+
+
+#---- Install extra librairies for WRF-Chem
+
+# Install YACC
+wget https://invisible-island.net/datafiles/release/byacc.tar.gz
+tar -xvzf byacc.tar.gz
+cd byacc-20240109/
+./configure --prefix=$TOOLDIR
+make
+make install
+cd ..
+
+# Install FLEX
+wget http://www.ncl.ucar.edu/Download/files/flex.tar.gz
+tar -xvzf flex.tar.gz
+cd flex-2.5.3/
+./configure --prefix=$TOOLDIR
+make
+make install
+cd ..
+
+#---- Compile WRF-Chem
+export EM_CORE=1
+export NMM_CORE=0
+export WRF_CHEM=1
+export WRF_KPP=1
+export HDF5_DISABLE_VERSION_CHECK=1
+export WRFIO_NCD_NO_LARGE_FILE_SUPPORT=0
+export WRFIO_NCD_LARGE_FILE_SUPPORT=1
+./clean -a
+./configure
+Choose options 34 then 1
+./compile em_real 2>&1 | tee compile.log
+cd ..
+
+#---- Compile WPS
+git clone https://github.com/wrf-model/WPS
+./configure
+Choose option 1
+./compile
+cd ..
+
+#---- Compile WRF-Chem without recompiling all the libraries
+export TOOLDIR=~marelle-ext/tools/lib/
+export CC=gcc
+export CXX=g++
+export FC=gfortran
+export F77=gfortran
+export NETCDF="$TOOLDIR"
+export JASPERLIB=$TOOLDIR/lib
+export JASPERINC=$TOOLDIR/include
+export PATH=$TOOLDIR/bin:$PATH
+export LD_LIBRARY_PATH=$TOOLDIR/lib:$LD_LIBRARY_PATH
+export FCFLAGS=-m64
+export FFLAGS=-m64
+export LDFLAGS=-L$TOOLDIR/lib
+export CPPFLAGS=-I$TOOLDIR/include
+export YACC="$TOOLDIR/bin/yacc -d"
+export FLEX_LIB_DIR="$TOOLDIR/lib"
+export EM_CORE=1
+export NMM_CORE=0
+export WRF_CHEM=1
+export WRF_KPP=1
+export HDF5_DISABLE_VERSION_CHECK=1
+export WRFIO_NCD_NO_LARGE_FILE_SUPPORT=0
+export WRFIO_NCD_LARGE_FILE_SUPPORT=1
+./clean -a
+./configure
+Choose 34 then 1
+./compile em_real 2>&1 | tee compile.log
