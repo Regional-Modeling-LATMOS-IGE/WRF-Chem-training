@@ -10,7 +10,7 @@ Please copy/paste this folder to your home directory on dahu, from where you wil
 
 ## Input files
 
-Input files ...
+Input files for `real` are the files created at the previous step with WPS.
 
 ## Paths and namelist options
 
