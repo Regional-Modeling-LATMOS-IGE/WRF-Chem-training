@@ -2,10 +2,15 @@
 The Weather Research and Forecasting Model (WRF) is a numerical weather prediction system designed to serve both atmospheric research and operational forecasting/hindcasting applications. WRF-Chem is the Weather Research and Forecasting (WRF) model coupled with Chemistry. WRF-Chem is a 3D, limited-area (regional) model used for weather forecasts,  long-term regional climate projections, air-quality forecasts and
  atmospheric process studies. The model simulates the emission, transport, mixing, and chemical transformation of trace gases and aerosols simultaneously with the meteorology.  
 
+
 ## For more info on WRF and WRF-Chem
->  https://www2.mmm.ucar.edu/wrf/users/
+- Check out the WRF tutorial online: https://www.mmm.ucar.edu/tutorials
+- Check out the WRF users webpage: https://www2.mmm.ucar.edu/wrf/users/
 ## For an introduction to the model, please watch this before you attend the training
->   https://www.youtube.com/watch?v=wzSu-343b-0
+- https://www.youtube.com/watch?v=wzSu-343b-0
+## For an introduction to GRIB and NETCDF formats, please have a look at these pages before you attend the training
+- Check out about netcdf (https://www.unidata.ucar.edu/software/netcdf/) and GRIB (https://confluence.ecmwf.int/display/CKB/What+are+GRIB+files+and+how+can+I+read+them) file formats.
+
 
 # WRF code distribution
 WRF is distrubted at:
