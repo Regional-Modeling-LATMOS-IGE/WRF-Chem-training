@@ -6,6 +6,7 @@ Times are in local Grenoble time (CEST)
 ## Before arriving:
 - Create your Gricad account
 - Go through the [`Getting_setup`](https://github.com/Regional-Modeling-LATMOS-IGE/WRF-Chem-training/blob/main/Getting_setup.md) document
+- Go through the [`WRF modeling system`](https://github.com/Regional-Modeling-LATMOS-IGE/WRF-Chem-training/blob/main/intro-WRF-modeling-system/WRF-modeling-system.md) introduction document
 - Bring a laptop with a terminal
 - Be prepared to work hard
 
