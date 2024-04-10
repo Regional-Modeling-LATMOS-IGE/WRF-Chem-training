@@ -9,6 +9,7 @@ Times are in local Grenoble time (CEST)
 - Go through the [`WRF modeling system`](https://github.com/Regional-Modeling-LATMOS-IGE/WRF-Chem-training/blob/main/intro-WRF-modeling-system/WRF-modeling-system.md) introduction document
 - Bring a laptop with a terminal
 - Be prepared to work hard
+- Read and adhere to the [`code of conduct`](https://github.com/Regional-Modeling-LATMOS-IGE/WRF-Chem-training/blob/main/Code_of_conduct.md)
 
 ## Day 1 - 29 April 2024
 
