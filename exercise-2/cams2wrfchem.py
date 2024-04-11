@@ -42,8 +42,10 @@ Notes:
 import sys
 if sys.version_info.major < 3:
     raise RuntimeError("Please use Python 3!")
+from argparse import ArgumentParser, RawDescriptionHelpFormatter as Formatter
 from itertools import product
 from collections import namedtuple
+from datetime import datetime, timedelta
 import numpy as np
 try:
     from shapely import Polygon
@@ -147,3 +149,69 @@ def calc_mapping(x_from, y_from, x_bdy_from, y_bdy_from,
         mapping[i][j] = calc_cellweights(
             x_from, y_from, x_bdy_from, y_bdy_from, polygon)
     return mapping
+
+if __name__ == "__main__":
+
+    ## Command-line arguments
+
+    # Read and pre-process arguments
+    parser = ArgumentParser(description=__doc__, formatter_class=Formatter)
+    parser.add_argument("--start", required=True)
+    parser.add_argument("--end", required=True)
+    parser.add_argument("--period", choices=("hour", "day"), default="day")
+    parser.add_argument("--CAMS-version", default="5.3")
+    parser.add_argument("--ndomains", default="1", type=int)
+    parser.add_argument("--dir-wrf-in", default="./")
+    args = parser.parse_args()
+    start = datetime.strptime(args.start, "%Y-%m-%d")
+    end = datetime.strptime(args.end, "%Y-%m-%d")
+    period = timedelta(**{args.period+"s": 1})
+
+    # Quality controls on arguments
+    if start.year != 2019 or end.year != 2019:
+        # TODO I don't think this limit applies here
+        raise NotImplementedError("Only year 2019-emissions are supported.")
+    if start >= end:
+        raise ValueError("Start date must be before end date.")
+    if args.CAMS_version != "5.3":
+        raise NotImplementedError("Only v5.3 of CAMS emissions is supported.")
+    if args.ndomains < 0:
+        raise ValueError("The number of domains must be a positive integer.")
+
+    ## Hard-coded parameters
+
+    dir_data = "/data/marelle/EMISSIONS/CAMS/v%s" % args.CAMS_version
+
+    species_info = dict(
+        CO = MozartMozaicSpecies("carbon-monoxide", 28),
+        # CO_A = MozartMozaicSpecies("carbon-monoxide", 28),
+        # NH3 = MozartMozaicSpecies("ammonia", 17),
+        # SO2 = MozartMozaicSpecies("sulphur-dioxide", 64),
+        # NO = MozartMozaicSpecies("nitrogen-oxides", 30),
+        # NO2 = MozartMozaicSpecies("nitrogen-oxides", 30),
+        # HCL = MozartMozaicSpecies(None, 36.46),
+        # BIGALK = MozartMozaicSpecies("non-methane-vocs", None),
+        # BIGENE = MozartMozaicSpecies("non-methane-vocs", None),
+        # C2H4 = MozartMozaicSpecies("non-methane-vocs", None),
+        # C2H5OH = MozartMozaicSpecies("non-methane-vocs", None),
+        # C2H6 = MozartMozaicSpecies("non-methane-vocs", None),
+        # C3H6 = MozartMozaicSpecies("non-methane-vocs", None),
+        # C3H8 = MozartMozaicSpecies("non-methane-vocs", None),
+        # CH2O = MozartMozaicSpecies("non-methane-vocs", None),
+        # CH3CHO = MozartMozaicSpecies("non-methane-vocs", None),
+        # CH3COCH3 = MozartMozaicSpecies("non-methane-vocs", None),
+        # CH3OH = MozartMozaicSpecies("non-methane-vocs", None),
+        # C2H2 = MozartMozaicSpecies("non-methane-vocs", None),
+        # MEK = MozartMozaicSpecies("non-methane-vocs", None),
+        # TOLUENE = MozartMozaicSpecies("non-methane-vocs", None),
+        # BENZENE = MozartMozaicSpecies("non-methane-vocs", None),
+        # XYLENE = MozartMozaicSpecies("non-methane-vocs", None),
+        # ORGJ = MozartMozaicSpecies("organic-carbon", None),
+        # ECJ = MozartMozaicSpecies("black-carbon", None),
+        # SO4J = MozartMozaicSpecies("sulphur-dioxide", 64),
+    )
+    species_mozmoz = sorted(species_info.keys())
+    species_cams = sorted(set(sp.name_cams for _, sp in species_info.items()
+                              if sp.name_cams is not None))
+    sectors_cams = ("ene", "ind", "res", "tro", "tnr", "ags", "agl", "swd",
+                    "slv", "fef", "shp")
