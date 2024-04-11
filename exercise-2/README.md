@@ -3,7 +3,7 @@ Setup of a regional model domain over Europe, run a real `WRF-Chem` case for the
 For this exercise, all of exercise-1 applies, except we add the `Chem` component of the model. Hereafter are only mentioned the specifics of `Chem`. all information related to WRF is in the exercise-1 folder.
 
 <p align="center">
- <img width="460" src="First_run_domain.png">
+ <img width="460" src="../exercise-1/First_run_domain.png">
 </p>
 
 
