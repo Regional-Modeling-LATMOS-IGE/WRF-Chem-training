@@ -32,6 +32,13 @@ Notes:
    a Matlab(r) script written by Louis Marelle, timestamped 30th of May 2023
    and named "prep_anthro_emissions_mozartmosaic_cams53.m".
 
+ - References:
+
+   * van der Gon, H. D., Hendriks, C., Kuenen, J., Segers, A., and Visschedijk,
+     A.: Description of Current Temporal Emission Patterns and Sensitivity of
+     Predicted AQ for Temporal Emission Patterns, EU FP7 MACC deliverable
+     report D_D-EMIS_1.3, 2011.
+
  - TODO (non-exhaustive):
 
    * Maybe libraries such as PySAL could be used to do the spatial attribution,
@@ -215,3 +222,37 @@ if __name__ == "__main__":
                               if sp.name_cams is not None))
     sectors_cams = ("ene", "ind", "res", "tro", "tnr", "ags", "agl", "swd",
                     "slv", "fef", "shp")
+
+    # Daily factors (Monday to Sunday) from TNO-MACC (van der Gon et al. 2011)
+    daily_factors = dict(ene = (1.06, 1.06, 1.06, 1.06, 1.06, 0.85, 0.85),
+                         ind = (1.08, 1.08, 1.08, 1.08, 1.08, 0.80, 0.80),
+                         res = (1.08, 1.08, 1.08, 1.08, 1.08, 0.80, 0.80),
+                         tro = (1.02, 1.06, 1.08, 1.10, 1.14, 0.81, 0.79),
+                         ags = tuple([1]*7), swd = tuple([1]*7),
+                         slv = tuple([1]*7), fef = tuple([1]*7),
+                         shp = tuple([1]*7))
+    daily_factors["tnr"] = daily_factors["tro"]
+    daily_factors["agl"] = daily_factors["ags"]
+
+    # Hourly factors (0h to 23h) from TNO-MACC (van der Gon et al. 2011)
+    hourly_factors = dict(
+        ene = [0.88, 0.79, 0.72, 0.72, 0.71, 0.74, 0.80, 0.92,
+               1.08, 1.19, 1.22, 1.21, 1.21, 1.17, 1.15, 1.14,
+               1.13, 1.10, 1.07, 1.04, 1.02, 1.02, 1.01, 0.96],
+        ind = [0.75, 0.75, 0.75, 0.78, 0.82, 0.88, 0.95, 1.02,
+               1.09, 1.16, 1.22, 1.28, 1.30, 1.22, 1.24, 1.25,
+               1.16, 1.08, 1.01, 0.95, 0.90, 0.85, 0.81, 0.78],
+        res = [0.40, 0.40, 0.40, 0.40, 0.40, 0.40, 0.50, 1.20,
+               1.50, 1.60, 1.60, 1.40, 1.20, 1.10, 1.10, 1.00,
+               1.00, 1.00, 1.10, 1.40, 1.50, 1.40, 1.40, 1.00],
+        tro = [0.44, 0.19, 0.09, 0.06, 0.05, 0.09, 0.22, 0.86,
+               1.84, 1.86, 1.41, 1.24, 1.20, 1.32, 1.44, 1.45,
+               1.59, 2.03, 2.08, 1.51, 1.06, 0.74, 0.62, 0.61],
+        ags = [0.60, 0.60, 0.60, 0.60, 0.60, 0.60, 0.65, 0.75,
+               0.90, 1.10, 1.25, 1.45, 1.60, 1.80, 1.75, 1.70,
+               1.55, 1.35, 1.10, 0.90, 0.75, 0.65, 0.60, 0.60],
+        swd = tuple([1]*24), slv = tuple([1]*24),
+        fef = tuple([1]*24), shp = tuple([1]*24)
+    )
+    hourly_factors["tnr"] = hourly_factors["tro"]
+    hourly_factors["agl"] = hourly_factors["ags"]
