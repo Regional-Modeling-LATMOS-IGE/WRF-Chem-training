@@ -157,6 +157,51 @@ def calc_mapping(x_from, y_from, x_bdy_from, y_bdy_from,
             x_from, y_from, x_bdy_from, y_bdy_from, polygon)
     return mapping
 
+## Impure functions
+
+def time_as_datetime(nc):
+    """Return time variable of given netCDF file as array of datetimes."""
+    time = nc.variables["time"]
+    if time.getncattr("calendar") != "gregorian":
+        raise NotImplementedError("Only supported calendar is gregorian.")
+    units = time.getncattr("units")
+    dt = units.split()[0]
+    start = datetime.strptime(units, dt + " since %Y-%m-%d %H:%M:%S")
+    dt = timedelta(**{dt: 1})
+    return np.full(time.shape, start) + np.full(time.shape, dt)*time
+
+def ll2xy_wrf(nc):
+    """Return the ll2xy function corresponding to open WRF file."""
+    proj = nc.getncattr("MAP_PROJ_CHAR")
+    if proj == "Polar Stereographic":
+        crs = pyproj.CRS.from_dict(dict(
+            proj = "stere",
+            lat_0 = str(nc.getncattr("POLE_LAT")),
+            lon_0 = str(nc.getncattr("CEN_LON")),
+            lat_ts = str(nc.getncattr("TRUELAT1")),
+        ))
+    else:
+        raise NotImplementedError('Projection type "%s" not supported.' % proj)
+    return pyproj.Transformer.from_crs(crs.geodetic_crs, crs).transform
+
+def create_wrfchemi_file(nc, filepath):
+    """Create WRF-Chem emission file with same grid as in nc, return handle."""
+    new = netCDF4.Dataset(filepath, mode="w")
+    new.createDimension("Time", 1)
+    new.createDimension("DateStrLen", 19)
+    new.createDimension("emissions_zdim_stag", 1)
+    for dim in ("west_east", "south_north", "bottom_top"):
+        size = [1, nc.dimensions[dim].size][dim != "bottom_top"]
+        new.createDimension(dim, size)
+        setattr(new, dim.upper()+"_GRID_DIMENSION", size+(dim!="bottom_top"))
+    for attr in ("DX", "DY", "CEN_LAT", "CEN_LON", "TRUELAT1", "TRUELAT2",
+                 "MOAD_CEN_LAT", "MAP_PROJ", "MMINLU"):
+        setattr(new, attr, getattr(nc, attr))
+    new.TITLE = "Created by " + __file__ + " on " + str(datetime.today())
+    var = new.createVariable("Times", "c", ("Time", "DateStrLen"))
+    var.datetime_format = "%Y-%m-%d_%H:%M:%S"
+    return new
+
 if __name__ == "__main__":
 
     ## Command-line arguments
