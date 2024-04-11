@@ -36,12 +36,14 @@ They are prepared with the `.py` script
 ## Fire emissions
 Fire emissions are taken from the Fire INventory from NCAR (FINN), Version 1.5
 > https://www.acom.ucar.edu/Data/fire/
-They are prepared with the fire_emis pre-processor. The parameter file for the mapping depends on the chemistry option choice and is, in our case, `fire_emis_mozartmosaic.inp`.
+
+They are prepared with the `fire_emis` pre-processor. The parameter file for the mapping depends on the chemistry option choice and is, in our case, `fire_emis_mozartmosaic.inp`.
 
 ## Biogenic emissions
 Biogenic emissions are taken from the Model of Emissions of Gases and Aerosols from Nature (MEGAN).
 > https://www2.acom.ucar.edu/modeling/model-emissions-gases-and-aerosols-nature-megan
-These emissions are processed with the megan_bio_emiss preprocessor, using the parameter file `megan_bioemiss.inp`
+
+These emissions are processed with the `megan_bio_emiss` preprocessor, using the parameter file `megan_bioemiss.inp`
 
 # Namelists
 The main way you will set options and decide how you will use the WRF modeling system and preprocessing system is through namelists.
