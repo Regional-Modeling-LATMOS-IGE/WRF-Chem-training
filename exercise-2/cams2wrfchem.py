@@ -125,8 +125,10 @@ def calc_cellweights(x, y, x_bdy, y_bdy, polygon):
     current = 0
     while current < len(queue):
         i, j = queue[current]
-        xx, yy = x_bdy[i:i+2,j:j+2], y_bdy[i:i+2,j:j+2]
-        cell = polygon_from_bounds(xx.min(), xx.max(), yy.min(), yy.max())
+        cell = Polygon([(x_bdy[i,j], y_bdy[i,j]),
+                        (x_bdy[i,j+1], y_bdy[i,j+1]),
+                        (x_bdy[i+1,j+1], y_bdy[i+1,j+1]),
+                        (x_bdy[i+1,j], y_bdy[i+1,j])])
         area_intersection = cell.intersection(polygon).area
         if area_intersection > 0:
             out.append(CellWeight(i, j, area_intersection/area_polygon))
