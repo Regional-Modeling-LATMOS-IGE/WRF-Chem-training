@@ -10,7 +10,6 @@
 - Make sure that you have access to the cluster
    - connect to the “bastion” : ssh  perseus-login@trinity.u-ga.fr
    - and then connect to a the frontnode of the cluster : ssh f-dahu
-- if it is your first time follow https://gricad-doc.univ-grenoble-alpes.fr/en/hpc/howtos/mpi/
 - For more information on connecting and doing scientific calculations on dahu see https://github.com/IGE-numerique/ige-calcul/blob/main/clusters/Gricad/dahu.md 
 
 
