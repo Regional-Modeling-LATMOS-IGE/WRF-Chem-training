@@ -485,11 +485,11 @@ if __name__ == "__main__":
         x_cams_bdy, y_cams_bdy = ll2xy(lon_cams_bdy, lat_cams_bdy)
 
         # Calculate the spatial mapping (this is the time consuming operation)
-        filepath = __file__[:-3] + "_mapping_" + domain + ".json"
+        filepath = __file__[:-3] + "_mapping_d" + domain + ".json"
         try:
             mapping = unjsonifile_mapping(filepath)
         except FileNotFoundError:
-            print("Calculating saptial mapping...")
+            print("Calculating spatial mapping...")
             mapping = calc_mapping(x_cams, y_cams, x_cams_bdy, y_cams_bdy,
                                    x_wrf, y_wrf, dx_wrf, dy_wrf)
             jsonifile_mapping(mapping, filepath)
@@ -509,8 +509,8 @@ if __name__ == "__main__":
                 solar = np.round((hour + nc_grid["XLONG"][0,:,:]/180*12) % 24)
                 solar = np.array(solar, dtype=int)
                 solar[solar==24] = 0
-                get_factor = np.vectorize(hourly_factors[sector].__getitem__)
-                hourly_factors_cache[key] = get_factor(solar)
+                get_function = np.vectorize(hourly_factors[sector].__getitem__)
+                hourly_factors_cache[key] = get_function(solar)
             return hourly_factors_cache[key]
 
         def get_factor(species, units, sector, time):
@@ -582,4 +582,4 @@ if __name__ == "__main__":
         nc_grid.close()
         close_ncfiles_in_dict(ncs_wrf)
 
-close_ncfiles_in_dict(ncs_cams)
+    close_ncfiles_in_dict(ncs_cams)
