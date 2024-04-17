@@ -30,5 +30,7 @@ In the `jobscript_wps.sh` script, you need to update a few paths for where to st
 When you have setup your `namelist.wps` and adjusted the paths in the `jobscript_wps.sh`, you can launch WPS using the following command: 
 > oarsub -S ./jobscript_wps.sh
 
+NB: you might need to `chmod +x jobscript_wps.sh` before launching.
+
 To follow the status of your run, prompt
 > oarstat -u username
