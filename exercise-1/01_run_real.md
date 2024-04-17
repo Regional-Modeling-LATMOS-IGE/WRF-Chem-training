@@ -25,5 +25,7 @@ You also need to setup the run dates and the allocated computing power.
 When you have setup your `namelist.input` and adjusted the paths in the `jobscript_real.sh`, you can launch real using the following command: 
 > oarsub -S ./jobscript_real.sh
 
+NB: you might need to `chmod +x jobscript_real.sh` before launching.
+
 To follow the status of your run, prompt
 > oarstat -u username
