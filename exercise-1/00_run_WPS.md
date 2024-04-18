@@ -1,7 +1,7 @@
 # First step - running WPS
 
 WPS is the WRF Pre-Processing System. It comprises several codes that together transform the meteorological input data to a WRF-compatible format.
-The scripts and parameter files needed to run WPS for this exercise are located on dahu here: `/bettik/PROJECTS/pr-regionalchem/laperer/WRFChem_training/00_run_WPS/`.
+The scripts and parameter files needed to run WPS for this exercise are located on dahu here: `/bettik/PROJECTS/pr-regionalchem/laperer/WRFChem_training/exercise-1/00_run_WPS/`.
 Please copy/paste this folder to your home directory on dahu, from where you will launch the runs.
 - `namelist.wps` contains the parameters defining the geographical information on the simulation domain, the projection...
 - `jobscript_wps.sh` is the script that will be used to launch the sequence of pre-processors associated with WPS on Dahu
