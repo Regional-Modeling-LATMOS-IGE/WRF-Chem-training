@@ -1,4 +1,5 @@
 # Second step - running *real*
+# *NB: although this looks like the second step from exercise-1, it is different and you need to do this one again (different model version/compile, additional steps...)*
 
 *real* is the pre-processor that generates initial and boundary conditions from the forcing data for use in *WRF*. For *WRF-Chem*, in addition to running *real*, a nunber of pre-processors to prepare emissions need to be run too at this point.
 
