@@ -59,6 +59,12 @@ Notes:
      Predicted AQ for Temporal Emission Patterns, EU FP7 MACC deliverable
      report D_D-EMIS_1.3, 2011.
 
+   * Shrivastava, M.; Fast, J.; Easter, R.; Gustafson, W. I.; Zaveri, R. A.;
+     Jimenez, J. L.; Saide, P.; Hodzic, A. Modeling organic aerosols in a
+     megacity: comparison of simple and complex representations of the
+     volatility basis set approach. Atmospheric Chemistry and Physics, 11,
+     6639-6662, 2011.
+
  - TODO (non-exhaustive):
 
    * Maybe libraries such as PySAL could be used to do the spatial attribution,
@@ -451,6 +457,10 @@ if __name__ == "__main__":
     frac_SO4_anthropo = 0.03
     frac_SO2_anthropo = 1 - frac_SO4_anthropo
 
+    # Conversion factor from organic carbon to organic matter (Shrivastava et
+    # al. 2011)
+    org_carbon_to_org_matter_anthropo = 1.25
+
     ## Prepare input files and grid information (open all the connections)
 
     ncs_cams = dict()
@@ -524,17 +534,18 @@ if __name__ == "__main__":
         def get_factor(species, units, sector, time):
             """Return multiplicative factor for given emissions and time."""
             # Unit conversion
-            if units == "kg m-2 s-1":
-                factor = 1e9 * 3600 / species_info[species_wrf].molmass
-                units = "mol km-2 h-1"
-            if np.isin(species_info[species_wrf].name_cams,['organic-carbon','black-carbon']):
+            if species in ("ECJ", "ORGJ", "SO4J") and units == "kg m-2 s-1":
                 factor = 1e9
                 units = "ug m-2 s-1"
+            elif units == "kg m-2 s-1":
+                factor = 1e9 * 3600 / species_info[species_wrf].molmass
+                units = "mol km-2 h-1"
             else:
                 raise ValueError("Unexpected units: %s." % units)
             # Speciation
             try:
-                factor *= dict(NO=frac_NO_anthropo,
+                factor *= dict(ORGJ=org_carbon_to_org_matter_anthropo,
+                               NO=frac_NO_anthropo,
                                NO2=frac_NO2_anthropo,
                                SO4J=frac_SO4_anthropo,
                                SO2=frac_SO2_anthropo)[species]
