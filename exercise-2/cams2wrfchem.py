@@ -46,7 +46,7 @@ Notes:
      metal-catalyzed oxidation of atmospheric sulfur: Global implications for
      the sulfur budget. Journal of Geophysical Research, 114, D02309, 2009.
 
-   * Chin, M.; Rood, R. B.; Lin, S.-J.; Müller, J.-F., Thompson,
+   * Chin, M.; Rood, R. B.; Lin, S.-J.; Muller, J.-F., Thompson,
      A. M. Atmospheric sulfur cycle simulated in the global model GOCART: Model
      description and global properties. Journal of Geophysical Research, 105
      (D20), 24671-24687, 2009, 2000.
@@ -269,6 +269,14 @@ def ll2xy_wrf(nc):
             lon_0 = str(nc.getncattr("CEN_LON")),
             lat_ts = str(nc.getncattr("TRUELAT1")),
         ))
+    elif proj == "Lambert Conformal":
+        crs = pyproj.CRS.from_dict(dict(
+            proj = "lcc",
+            lat_0 = str(nc.getncattr("CEN_LAT")),
+            lon_0 = str(nc.getncattr("CEN_LON")),
+            lat_1 = str(nc.getncattr("TRUELAT1")),
+            lat_2 = str(nc.getncattr("TRUELAT2")),
+        ))
     else:
         raise NotImplementedError('Projection type "%s" not supported.' % proj)
     return pyproj.Transformer.from_crs(crs.geodetic_crs, crs).transform
@@ -346,7 +354,7 @@ if __name__ == "__main__":
     parser.add_argument("--ndomains", default="1", type=int)
     parser.add_argument("--dir-wrf-in", default="./")
     parser.add_argument("--dir-em-in",
-                        default="/data/marelle/EMISSIONS/CAMS/v5.3")
+                        default="/bettik/PROJECTS/pr-regionalchem/laperer/WRFCHEM_INPUT/CAMS_EMISSIONS/v5.3")
     args = parser.parse_args()
     start = datetime.strptime(args.start, "%Y-%m-%d")
     end = datetime.strptime(args.end, "%Y-%m-%d")
@@ -389,8 +397,8 @@ if __name__ == "__main__":
         # TOLUENE = MozartMozaicSpecies("non-methane-vocs", None),
         # BENZENE = MozartMozaicSpecies("non-methane-vocs", None),
         # XYLENE = MozartMozaicSpecies("non-methane-vocs", None),
-        # ORGJ = MozartMozaicSpecies("organic-carbon", None),
-        # ECJ = MozartMozaicSpecies("black-carbon", None),
+        ORGJ = MozartMozaicSpecies("organic-carbon", None),
+        ECJ = MozartMozaicSpecies("black-carbon", None),
         SO4J = MozartMozaicSpecies("sulphur-dioxide", 64),
     )
     all_species_wrf = sorted(species_info.keys())
@@ -519,6 +527,9 @@ if __name__ == "__main__":
             if units == "kg m-2 s-1":
                 factor = 1e9 * 3600 / species_info[species_wrf].molmass
                 units = "mol km-2 h-1"
+             if np.isin(species_info[species_wrf].name_cams,['organic-carbon','black-carbon']):
+                factor = 1e9
+                units = "ug m-2 s-1"
             else:
                 raise ValueError("Unexpected units: %s." % units)
             # Speciation
