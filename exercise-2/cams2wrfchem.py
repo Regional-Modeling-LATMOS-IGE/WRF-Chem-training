@@ -527,7 +527,7 @@ if __name__ == "__main__":
             if units == "kg m-2 s-1":
                 factor = 1e9 * 3600 / species_info[species_wrf].molmass
                 units = "mol km-2 h-1"
-             if np.isin(species_info[species_wrf].name_cams,['organic-carbon','black-carbon']):
+            if np.isin(species_info[species_wrf].name_cams,['organic-carbon','black-carbon']):
                 factor = 1e9
                 units = "ug m-2 s-1"
             else:
