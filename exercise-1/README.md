@@ -91,5 +91,5 @@ Deatiled instructions for the exercise are given in the dedicated directories he
 
 ## Plot WRF output
 
-We have prepared python scripts that plot maps, time series of variables of interest for our simulation case. They can be found there: `/bettik/PROJECTS/pr-regionalchem/couetoup`
+We have prepared python scripts that plot maps, time series of variables of interest for our simulation case. They can be found there: `/bettik/PROJECTS/pr-regionalchem/couetoup/wrf_out_plots.ipynb`
 Feel free to copy them on your home folder and modify them as you wish.
