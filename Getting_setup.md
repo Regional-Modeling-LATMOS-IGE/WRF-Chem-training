@@ -1,8 +1,8 @@
 The first steps are adapted from [the official GRICAD documentation](https://gricad-doc.univ-grenoble-alpes.fr/en/hpc/connexion/) and [the informal IGE documentation](https://github.com/ige-calcul/public-docs/blob/main/clusters/Gricad/dahu.md). The following ones are tailored for the training purposes. Please refer to the official documentation in case of problems.
 
 1. Getting a [Perseus NG account](https://perseus.univ-grenoble-alpes.fr/) (more details [here](https://gricad-doc.univ-grenoble-alpes.fr/en/services/perseus-ng/account/))
-  
-2. Joining the `pr_regionalchel` project on **Perseus**: *Home > My projects > Join a project* (more details [here](https://gricad-doc.univ-grenoble-alpes.fr/en/services/perseus-ng/project/)) 
+
+2. Joining the `pr_regionalchem` project on **Perseus**: *Home > My projects > Join a project* (more details [here](https://gricad-doc.univ-grenoble-alpes.fr/en/services/perseus-ng/project/))
 
 3. Use your previously created `<perseus-login>` and its password to check your access to clusters:
     - connect first to the proxy: `ssh <perseus-login>@trinity.u-ga.fr`
@@ -14,25 +14,25 @@ The first steps are adapted from [the official GRICAD documentation](https://gri
       ```
       ssh-keygen
       ```
-    
+
     - Configure your `.ssh/config` file for SSH easy access to clusters by adding the following lines (**don't forget to change `<perseus-login>` in both place**):
       ```
       Host trinity.u-ga.fr rotule.u-ga.fr access-gricad.u-ga.fr
         User <perseus-login>
-      
+
       Host dahu.ciment
         Hostname dahu
         User <perseus-login>
         ProxyJump access-gricad
       ```
-      
+
     - Copy your SSH public key to the cluster proxies and then to the DAHU cluster (password for the SSH private key will be requested first if set, then the Perseus Account password):
       ```
       ssh-copy-id rotule.u-ga.fr
       ssh-copy-id trinity.u-ga.fr
       ssh-copy-id dahu.ciment
       ```
-        
+
       - Connect to the DAHU cluster using:
       ```
       ssh dahu.ciment
@@ -53,7 +53,7 @@ The first steps are adapted from [the official GRICAD documentation](https://gri
       ```
       nix-env -i -f ~/python.nix
       ```
-    
+
     - Set-up python packages:
 
       In the same terminal than previous commands:
@@ -64,7 +64,7 @@ The first steps are adapted from [the official GRICAD documentation](https://gri
       ```
       # Python environment
       pythonEnv = pkgs.python3.withPackages (ps: with ps; [
-  
+
             #################################################
             # You can list your python packages below and
             # install a python environement with:
@@ -75,9 +75,9 @@ The first steps are adapted from [the official GRICAD documentation](https://gri
       ```
       Add to the line with package names: "numpy ipython virtualenv pip notebook" the python package you need. For this training, you can add those package:
       ```
-      numpy ipython virtualenv pip notebook xarray matplotlib cartopy
+      numpy ipython virtualenv pip notebook xarray matplotlib cartopy netcdf4 pyproj shapely pandas
       ```
-      Then download your new python environement :
+      Then download your new python environment :
       ```
       nix-env -f "<nixpkgs>" -iA pythonEnv
       ```
