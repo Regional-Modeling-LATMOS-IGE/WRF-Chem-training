@@ -399,7 +399,7 @@ if __name__ == "__main__":
     parser.add_argument("--period", choices=("hour", "day"), default="day")
     parser.add_argument("--nlevels", default=16)
     parser.add_argument("--CAMS-version", default="5.3")
-    parser.add_argument("--ndomains", default="1", type=int)
+    parser.add_argument("--domain", default=1, type=int)
     parser.add_argument("--dir-wrf-in", default="./")
     parser.add_argument("--dir-em-in",
                         default=("/bettik/PROJECTS/pr-regionalchem/laperer"
@@ -419,8 +419,8 @@ if __name__ == "__main__":
         raise ValueError("The number of levels must be a positive integer.")
     if args.CAMS_version != "5.3":
         raise NotImplementedError("Only v5.3 of CAMS emissions is supported.")
-    if args.ndomains <= 0:
-        raise ValueError("The number of domains must be a positive integer.")
+    if args.domain <= 0:
+        raise ValueError("The domain number must be a positive integer.")
 
     ## Hard-coded parameters
 
@@ -659,168 +659,170 @@ if __name__ == "__main__":
     )
     lat_cams, lon_cams = meshgrid(lat_cams, lon_cams)
 
-    # Process emissions
-    for domain in range(args.ndomains):
+    ## Get basic information about WRF grid
 
-        # Get basic information about WRF grid
-        domain = ("%2d" % (domain+1)).replace(" ", "0")
-        filename = "wrfinput_d%s" % domain
-        nc_grid = netCDF4.Dataset(join(args.dir_wrf_in, filename))
-        dx_wrf, dy_wrf = nc_grid.getncattr("DX"), nc_grid.getncattr("DY")
-        ll2xy = ll2xy_wrf(nc_grid)
-        x_wrf, y_wrf = ll2xy(nc_grid["XLONG"][0,:,:], nc_grid["XLAT"][0,:,:])
-        x_cams, y_cams = ll2xy(lon_cams, lat_cams)
-        x_cams_bdy, y_cams_bdy = ll2xy(lon_cams_bdy, lat_cams_bdy)
+    domain = ("%2d" % args.domain).replace(" ", "0")
+    filename = "wrfinput_d%s" % domain
+    nc_grid = netCDF4.Dataset(join(args.dir_wrf_in, filename))
+    dx_wrf, dy_wrf = nc_grid.getncattr("DX"), nc_grid.getncattr("DY")
+    ll2xy = ll2xy_wrf(nc_grid)
+    x_wrf, y_wrf = ll2xy(nc_grid["XLONG"][0,:,:], nc_grid["XLAT"][0,:,:])
+    x_cams, y_cams = ll2xy(lon_cams, lat_cams)
+    x_cams_bdy, y_cams_bdy = ll2xy(lon_cams_bdy, lat_cams_bdy)
 
-        # Prepare vertical projection
-        # TODO add units check of PHB et HGT
-        if args.nlevels+1 > nc_grid["PHB"].shape[2]:
-            raise ValueError("Not enough vertical layers in WRF domain file.")
-        z_wrf = nc_grid["PHB"][0,:args.nlevels+1,:,:] / 9.81
-        z_wrf[0,:,:] = 0
-        for i in range(1,args.nlevels+1):
-            z_wrf[i,:,:] -= nc_grid["HGT"][0,:,:]
+    # Prepare vertical projection
+    # TODO add units check of PHB et HGT
+    if args.nlevels+1 > nc_grid["PHB"].shape[2]:
+        raise ValueError("Not enough vertical layers in WRF domain file.")
+    z_wrf = nc_grid["PHB"][0,:args.nlevels+1,:,:] / 9.81
+    z_wrf[0,:,:] = 0
+    for i in range(1,args.nlevels+1):
+        z_wrf[i,:,:] -= nc_grid["HGT"][0,:,:]
 
-        # Calculate the spatial mapping (this is the time consuming operation)
-        filepath = __file__[:-3] + "_mapping_d" + domain + ".json"
+    ## Calculate the spatial mapping (this is the time consuming operation)
+
+    filepath = __file__[:-3] + "_mapping_d" + domain + ".json"
+    try:
+        mapping = unjsonifile_mapping(filepath)
+    except FileNotFoundError:
+        print("Calculating spatial mapping...")
+        mapping = calc_mapping(x_cams, y_cams, x_cams_bdy, y_cams_bdy,
+                               x_wrf, y_wrf, dx_wrf, dy_wrf)
+        jsonifile_mapping(mapping, filepath)
+        print("Spatial mapping saved in %s." % filepath)
+    else:
+        print("Spatial mapping read from %s." % filepath)
+
+    ## Emission processing functions
+
+    hourly_factors_cache = dict()
+    def get_hourly_factors(hour, sector):
+        """Return hourly factors for wrf grid for given hour and sector.
+
+        We cache the results of this function for efficiency.
+
+        """
+        key = str(hour) + sector
+        if key not in hourly_factors_cache:
+            solar = np.round((hour + nc_grid["XLONG"][0,:,:]/180*12) % 24)
+            solar = np.array(solar, dtype=int)
+            solar[solar==24] = 0
+            get_function = np.vectorize(hourly_factors[sector].__getitem__)
+            hourly_factors_cache[key] = get_function(solar)
+        return hourly_factors_cache[key]
+
+    def get_factor(species, units, sector, time):
+        """Return multiplicative factor for given emissions and time."""
+        # Speciation
         try:
-            mapping = unjsonifile_mapping(filepath)
-        except FileNotFoundError:
-            print("Calculating spatial mapping...")
-            mapping = calc_mapping(x_cams, y_cams, x_cams_bdy, y_cams_bdy,
-                                   x_wrf, y_wrf, dx_wrf, dy_wrf)
-            jsonifile_mapping(mapping, filepath)
-            print("Spatial mapping saved in %s." % filepath)
+            factor = dict(ORGJ=org_carbon_to_org_matter_anthropo,
+                          NO=frac_NO_anthropo,
+                          NO2=frac_NO2_anthropo,
+                          SO4J=frac_SO4_anthropo,
+                          SO2=frac_SO2_anthropo)[species]
+        except KeyError:
+            if species_info[species].name_cams == "non-methane-vocs":
+                idx = (voc_em.name_mech == species)
+                if sum(idx) == 0:
+                    return 0
+                col = "cams_"+sector
+                factor = (voc_em[col][idx]/voc_em.molmass[idx]).sum()*1000
+                units = {"kg m-2 s-1": "mol m-2 s-1"}[units]
+            else:
+                factor = 1
+        # Unit conversion
+        if species in pm_species_wrf and units == "kg m-2 s-1":
+            factor *= 1e9
+            units = "ug m-2 s-1"
+        elif units == "mol m-2 s-1":
+            factor *= 1e6 * 3600
+            units = "mol km-2 h-1"
+        elif units == "kg m-2 s-1":
+            factor *= 1e9 * 3600 / species_info[species].molmass
+            units = "mol km-2 h-1"
         else:
-            print("Spatial mapping read from %s." % filepath)
+            raise ValueError("Unexpected units: %s." % units)
+        # Temporal projection (time of day and day of week)
+        factor *= daily_factors[sector][time.weekday()]
+        if args.period == "hour":
+            factor = get_hourly_factors(time.hour, sector) * factor
+        return factor, units
 
-        hourly_factors_cache = dict()
-        def get_hourly_factors(hour, sector):
-            """Return hourly factors for wrf grid for given hour and sector.
+    def vertical_projection(em, sector):
+        """Return given emissions after vertical projection.
 
-            We cache the results of this function for efficiency.
+        Input array is a 2D array, whereas output array in a 3D array.
 
-            """
-            key = str(hour) + sector
-            if key not in hourly_factors_cache:
-                solar = np.round((hour + nc_grid["XLONG"][0,:,:]/180*12) % 24)
-                solar = np.array(solar, dtype=int)
-                solar[solar==24] = 0
-                get_function = np.vectorize(hourly_factors[sector].__getitem__)
-                hourly_factors_cache[key] = get_function(solar)
-            return hourly_factors_cache[key]
+        """
+        factors = height_factors[sector]
+        out = np.zeros((args.nlevels,) + em.shape)
+        for b, z in product(range(len(height_bounds)-1), range(args.nlevels)):
+            bottom, top = height_bounds[b:b+2]
+            mini = np.maximum(z_wrf[z,:,:], bottom)
+            maxi = np.minimum(z_wrf[z+1,:,:], top)
+            overlap = maxi - mini
+            idx = (overlap > 0)
+            fac = factors[b] / (top-bottom)
+            out[z,idx] += overlap[idx] * fac * em[idx]
+        return out
 
-        def get_factor(species, units, sector, time):
-            """Return multiplicative factor for given emissions and time."""
-            # Speciation
-            try:
-                factor = dict(ORGJ=org_carbon_to_org_matter_anthropo,
-                              NO=frac_NO_anthropo,
-                              NO2=frac_NO2_anthropo,
-                              SO4J=frac_SO4_anthropo,
-                              SO2=frac_SO2_anthropo)[species]
-            except KeyError:
-                if species_info[species].name_cams == "non-methane-vocs":
-                    idx = (voc_em.name_mech == species)
-                    if sum(idx) == 0:
-                        return 0
-                    col = "cams_"+sector
-                    factor = (voc_em[col][idx]/voc_em.molmass[idx]).sum()*1000
-                    units = {"kg m-2 s-1": "mol m-2 s-1"}[units]
-                else:
-                    factor = 1
-            # Unit conversion
-            if species in pm_species_wrf and units == "kg m-2 s-1":
-                factor *= 1e9
-                units = "ug m-2 s-1"
-            elif units == "mol m-2 s-1":
-                factor *= 1e6 * 3600
-                units = "mol km-2 h-1"
-            elif units == "kg m-2 s-1":
-                factor *= 1e9 * 3600 / species_info[species].molmass
-                units = "mol km-2 h-1"
-            else:
-                raise ValueError("Unexpected units: %s." % units)
-            # Temporal projection (time of day and day of week)
-            factor *= daily_factors[sector][time.weekday()]
-            if args.period == "hour":
-                factor = get_hourly_factors(time.hour, sector) * factor
-            return factor, units
+    def process_emissions_zero(species_wrf, ncs_wrf):
+        """Process emissions for given species (set all values to 0)."""
+        f_datestring = "%Y-%m-%d_%H:%M:%S"
+        time = start
+        if species_wrf in pm_species_wrf:
+            units_wrf = "ug m-2 s-1"
+        else:
+            units_wrf = "mol km-2 h-1"
+        while time <= end:
+            nc_wrf = get_wrf_emissions_file(domain, time, ncs_wrf, nc_grid)
+            var = get_wrf_emissions_variable(nc_wrf, species_wrf, units_wrf)
+            time += period
 
-        def vertical_projection(em, sector):
-            """Return given emissions after vertical projection.
+    def process_emissions(species_wrf, sector, ncs_wrf):
+        """Process emissions for given species and sectors."""
+        species_cams = species_info[species_wrf].name_cams
+        nc_cams = ncs_cams[species_cams]
+        if sector not in nc_cams.variables:
+            return
+        units_cams = nc_cams[sector].units
+        # Quality check on the variable's dimensions in input file
+        vdims = tuple(d.name for d in nc_cams[sector].get_dims())
+        if vdims != ("time", "lat", "lon"):
+            raise ValueError("Unexpected dimensions.")
+        # Process each time step
+        f_datestring = "%Y-%m-%d_%H:%M:%S"
+        idx_old = None
+        time = start
+        while time <= end:
+            factor, units_wrf = get_factor(species_wrf, units_cams,
+                                           sector, time)
+            nc_wrf = get_wrf_emissions_file(domain, time, ncs_wrf, nc_grid)
+            var = get_wrf_emissions_variable(nc_wrf, species_wrf, units_wrf)
+            idx = unique_index(times_cams, time.strftime("%Y%m"))
+            if idx != idx_old:
+                em_in = nc_cams[sector][idx,:,:]
+                # Fix unrealistic NH3 high-lat agricultural emissions
+                if sector == "agl" and species_cams == "ammonia":
+                    em_in[lat_cams>72] = 0
+                em_out = remap(em_in, mapping)
+            var[0,:,:,:] += vertical_projection(em_out * factor, sector)
+            idx_old = idx
+            time += period
 
-            Input array is a 2D array, whereas output array in a 3D array.
+    ## Here is the loop that actually processes emissions
 
-            """
-            factors = height_factors[sector]
-            out = np.zeros((args.nlevels,) + em.shape)
-            for b, z in product(range(len(height_bounds)-1),
-                                range(args.nlevels)):
-                bottom, top = height_bounds[b:b+2]
-                mini = np.maximum(z_wrf[z,:,:], bottom)
-                maxi = np.minimum(z_wrf[z+1,:,:], top)
-                overlap = maxi - mini
-                idx = (overlap > 0)
-                fac = factors[b] / (top-bottom)
-                out[z,idx] += overlap[idx] * fac * em[idx]
-            return out
+    ncs_wrf = dict()
+    for species_wrf, sector in product(all_species_wrf, all_sectors_cams):
+        print("Process species %s, sector %s" % (species_wrf, sector))
+        species_cams = species_info[species_wrf].name_cams
+        if species_cams is None:
+            process_emissions_zero(species_wrf, ncs_wrf)
+        else:
+            process_emissions(species_wrf, sector, ncs_wrf)
 
-        def process_emissions_zero(species_wrf, ncs_wrf):
-            """Process emissions for given species (set all values to 0)."""
-            f_datestring = "%Y-%m-%d_%H:%M:%S"
-            time = start
-            if species_wrf in pm_species_wrf:
-                units_wrf = "ug m-2 s-1"
-            else:
-                units_wrf = "mol km-2 h-1"
-            while time <= end:
-                nc_wrf = get_wrf_emissions_file(domain, time, ncs_wrf, nc_grid)
-                var = get_wrf_emissions_variable(nc_wrf, species_wrf, units_wrf)
-                time += period
+    ## Finalize
 
-        def process_emissions(species_wrf, sector, ncs_wrf):
-            """Process emissions for given species and sectors."""
-            species_cams = species_info[species_wrf].name_cams
-            nc_cams = ncs_cams[species_cams]
-            if sector not in nc_cams.variables:
-                return
-            units_cams = nc_cams[sector].units
-            # Quality check on the variable's dimensions in input file
-            vdims = tuple(d.name for d in nc_cams[sector].get_dims())
-            if vdims != ("time", "lat", "lon"):
-                raise ValueError("Unexpected dimensions.")
-            # Process each time step
-            f_datestring = "%Y-%m-%d_%H:%M:%S"
-            idx_old = None
-            time = start
-            while time <= end:
-                factor, units_wrf = get_factor(species_wrf, units_cams,
-                                               sector, time)
-                nc_wrf = get_wrf_emissions_file(domain, time, ncs_wrf, nc_grid)
-                var = get_wrf_emissions_variable(nc_wrf, species_wrf, units_wrf)
-                idx = unique_index(times_cams, time.strftime("%Y%m"))
-                if idx != idx_old:
-                    em_in = nc_cams[sector][idx,:,:]
-                    # Fix unrealistic NH3 high-lat agricultural emissions
-                    if sector == "agl" and species_cams == "ammonia":
-                        em_in[lat_cams>72] = 0
-                    em_out = remap(em_in, mapping)
-                var[0,:,:,:] += vertical_projection(em_out * factor, sector)
-                idx_old = idx
-                time += period
-
-        # Here is the loop that actually processes emissions
-        ncs_wrf = dict()
-        for species_wrf, sector in product(all_species_wrf, all_sectors_cams):
-            print("Process species %s, sector %s" % (species_wrf, sector))
-            species_cams = species_info[species_wrf].name_cams
-            if species_cams is None:
-                process_emissions_zero(species_wrf, ncs_wrf)
-            else:
-                process_emissions(species_wrf, sector, ncs_wrf)
-
-        nc_grid.close()
-        close_ncfiles_in_dict(ncs_wrf)
-
+    nc_grid.close()
+    close_ncfiles_in_dict(ncs_wrf)
     close_ncfiles_in_dict(ncs_cams)
