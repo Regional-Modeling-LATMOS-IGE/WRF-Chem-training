@@ -46,10 +46,21 @@ Notes:
      metal-catalyzed oxidation of atmospheric sulfur: Global implications for
      the sulfur budget. Journal of Geophysical Research, 114, D02309, 2009.
 
+   * Carter, P. L. Development of an Improved Chemical Speciation Database for
+     Processing Emissions of Volatile Organic Compounds for Air Quality Models.
+     https://intra.engr.ucr.edu/~carter/emitdb/, ongoing.
+
    * Chin, M.; Rood, R. B.; Lin, S.-J.; Muller, J.-F., Thompson,
      A. M. Atmospheric sulfur cycle simulated in the global model GOCART: Model
      description and global properties. Journal of Geophysical Research, 105
      (D20), 24671-24687, 2009, 2000.
+
+   * Emmons, L. K.; Walters, S.; Hess, P. G.; Lamarque, J.-F.; Pfister, G. G.;
+     Fillmore, D.; Granier, C.; Guenther, A.; Kinnison, D.; Laepple, T.;
+     Orlando J.; Tie, X.; Tyndall, G.; Wiedinmyer, C.; Baughcum, S. L.;
+     Kloster, S. Description and evaluation of the Model for Ozone and Related
+     chemical Tracers, version 4 (MOZART-4). Geoscientific Model Development,
+     3, 43–67, 2010.
 
    * Finlayson-Pitts, B. J.; Pitts, J. N. Jr. Chemistry of the Upper and Lower
      Atmosphere: Theory, Experiments, and Applications. Elsevier Inc, 2000.
@@ -59,11 +70,21 @@ Notes:
      Predicted AQ for Temporal Emission Patterns, EU FP7 MACC deliverable
      report D_D-EMIS_1.3, 2011.
 
+   * Murrells, T. P.; Passant, N. R.; Thistlethwaite, G.; Wagner, A.; Li, Y.;
+     Bush, T.; Norris, J.; Coleman, P. J.; Walker, C.; Stewart, R. A.;
+     Tsagatakis, U.; Conolly, C.; Brophy N. C. J.; Okamura, S. UK Emissions of
+     Air Pollutants 1970 to 2007. UK National Atmospheric Emissions
+     Inventory. 2010.
+
    * Shrivastava, M.; Fast, J.; Easter, R.; Gustafson, W. I.; Zaveri, R. A.;
      Jimenez, J. L.; Saide, P.; Hodzic, A. Modeling organic aerosols in a
      megacity: comparison of simple and complex representations of the
      volatility basis set approach. Atmospheric Chemistry and Physics, 11,
      6639-6662, 2011.
+
+   * Zaveri, R. A.; Peters, L. K. A new lumped structure photochemical
+     mechanism for large-scale applications. Journal of Geophysical Research,
+     104 (D23), 30387-30415, 1999.
 
  - TODO (non-exhaustive):
 
@@ -73,9 +94,6 @@ Notes:
    * The fraction of sulfate in anthropogenic sulfur emissions in Min et
      al. (2000) is actually "5% for Europe and 3% for elsewhere". This script
      uses 3% in all situations. Does this need to be adapted ?
-
-   * Fix attribution of cell weights when current method gives a total weight
-     that is < 1 (use brute-force in this case?)
 
    * For the NO/NOx ratio in anthropogenic emissions, Louis mentions Kaynak et
      al. 2009 as a reference, along with Finlayson-Pitts & Pitts (2000). Should
@@ -94,13 +112,6 @@ Notes:
      # create the files. The files I looked at actually contained emissions for
      years 2000 through 2013.
 
-   * It would probably be useful to write somewhere in this script what the
-     CAMS emission sector abbreviations stand for.
-
-   * For WRF species with no CAMS equivalent (eg. HCL), we should create the
-     emissions and set them to zero. For now the emissions are simply not
-     created.
-
 """
 
 import sys
@@ -113,6 +124,7 @@ from collections import namedtuple
 import json
 from datetime import datetime, timedelta
 import numpy as np
+import pandas as pd
 import netCDF4
 import pyproj
 try:
@@ -122,6 +134,7 @@ except ImportError:
 
 ## Data structures
 
+# TODO use pandas.DataFrame instead of dictonary of MozartMozaicSpecies
 MozartMozaicSpecies = namedtuple("MozartMozaicSpecies", "name_cams molmass")
 
 CellWeight = namedtuple("CellWeight", "i j weight")
@@ -160,10 +173,11 @@ def polygon_from_center(xc, yc, dx, dy):
     return polygon_from_bounds(xc-dx/2, xc+dx/2, yc-dy/2, yc+dy/2)
 
 def surrounding_cells(i, j, nrows, ncols):
-    """Return the list of indices of the cells surrounding [i,j]."""
-    return [(x,y) for x, y in product(range(i-1,i+2), range(j-1,j+2))
-            if x >= 0 and x < nrows and y >= 0 and y < ncols and
-            (x != i or y != j)]
+    """Return the list of cells surrounding [i,j] (wrap around)."""
+    return [(0 if x < 0 else (x if x < nrows else nrows-1),
+             0 if y < 0 else (y if y < ncols else ncols-1))
+            for x, y in product(range(i-1,i+2), range(j-1,j+2))
+            if (x != i or y != j)]
 
 def calc_cellweights(x, y, x_bdy, y_bdy, polygon):
     """Return cell weights corresponding to polygon in given grid.
@@ -196,10 +210,35 @@ def calc_cellweights(x, y, x_bdy, y_bdy, polygon):
                 if cell not in queue:
                     queue.append(cell)
         current += 1
-    weight = sum(cell.weight for cell in out)
-    if abs(weight-1) > 1e-10:
-        # TODO fix cases when total weight is < 1
-        print("Total weight is not equal to 1 (%.2f)." % weight)
+    total = sum(cell.weight for cell in out)
+    if abs(total-1) > 1e-5:
+        print("Total weight not equal to 1 (%.2f), using brute force" % total)
+        out = calc_cellweights_bruteforce(x_bdy, y_bdy, polygon)
+    return out
+
+def calc_cellweights_bruteforce(x_bdy, y_bdy, polygon):
+    """Return cell weights corresponding to polygon in given grid.
+
+    For example, if this function returns [(1, 2, 0.25), (3, 4, 0.75)], it
+    means that 25% of given polygon intersects with cell [1,2] of given grid
+    and that 75% of given polygon intersects with cell [3,4] of given grid.
+
+    """
+    out = []
+    area_polygon = polygon.area
+    nrows, ncols = shape_of_arrays(x_bdy, y_bdy)
+    for i, j in product(range(nrows-1), range(ncols-1)):
+        cell = Polygon([(x_bdy[i,j], y_bdy[i,j]),
+                        (x_bdy[i,j+1], y_bdy[i,j+1]),
+                        (x_bdy[i+1,j+1], y_bdy[i+1,j+1]),
+                        (x_bdy[i+1,j], y_bdy[i+1,j])])
+        area_intersection = cell.intersection(polygon).area
+        if area_intersection > 0:
+            out.append(CellWeight(i, j, area_intersection/area_polygon))
+    total = sum(cell.weight for cell in out)
+    if abs(total-1) > 1e-5:
+        print("Brute force: still not equal to 1 (%.2f), scaling...." % total)
+        out = [CellWeight(cw.i, cw.j, cw.weight/total) for cw in out]
     return out
 
 def calc_mapping(x_from, y_from, x_bdy_from, y_bdy_from,
@@ -306,11 +345,13 @@ def get_wrf_emissions_file(domain, time, ncs, nc_grid):
         nc = netCDF4.Dataset(filepath, mode="w")
         nc.createDimension("Time", 1)
         nc.createDimension("DateStrLen", 19)
-        nc.createDimension("emissions_zdim_stag", 1)
-        for dim in ("west_east", "south_north", "bottom_top"):
-            size = [nc_grid.dimensions[dim].size, 1][dim == "bottom_top"]
+        nc.createDimension("emissions_zdim_stag", args.nlevels)
+        for dim in ("west_east", "south_north"):
+            size = nc_grid.dimensions[dim].size
             nc.createDimension(dim, size)
-            setattr(nc, dim.upper()+"_GRID_DIMENSION", size+(dim!="bottom_top"))
+            setattr(nc, dim.upper()+"_GRID_DIMENSION", size+1)
+        nc.createDimension("bottom_top", args.nlevels)
+        nc.BOTTOM_TOP_GRID_DIMENSION = args.nlevels
         for attr in ("DX", "DY", "CEN_LAT", "CEN_LON", "TRUELAT1", "TRUELAT2",
                      "MOAD_CEN_LAT", "MAP_PROJ", "MMINLU"):
             setattr(nc, attr, getattr(nc_grid, attr))
@@ -356,11 +397,13 @@ if __name__ == "__main__":
     parser.add_argument("--start", required=True)
     parser.add_argument("--end", required=True)
     parser.add_argument("--period", choices=("hour", "day"), default="day")
+    parser.add_argument("--nlevels", default=16)
     parser.add_argument("--CAMS-version", default="5.3")
     parser.add_argument("--ndomains", default="1", type=int)
     parser.add_argument("--dir-wrf-in", default="./")
     parser.add_argument("--dir-em-in",
-                        default="/bettik/PROJECTS/pr-regionalchem/laperer/WRFCHEM_INPUT/CAMS_EMISSIONS/v5.3")
+                        default=("/bettik/PROJECTS/pr-regionalchem/laperer"
+                                 "/WRFCHEM_INPUT/CAMS_EMISSIONS/v5.3"))
     args = parser.parse_args()
     start = datetime.strptime(args.start, "%Y-%m-%d")
     end = datetime.strptime(args.end, "%Y-%m-%d")
@@ -372,6 +415,8 @@ if __name__ == "__main__":
         raise NotImplementedError("Only year 2019-emissions are supported.")
     if start >= end:
         raise ValueError("Start date must be before end date.")
+    if args.nlevels <= 0:
+        raise ValueError("The number of levels must be a positive integer.")
     if args.CAMS_version != "5.3":
         raise NotImplementedError("Only v5.3 of CAMS emissions is supported.")
     if args.ndomains <= 0:
@@ -381,33 +426,34 @@ if __name__ == "__main__":
 
     species_info = dict(
         CO = MozartMozaicSpecies("carbon-monoxide", 28),
-        # CO_A = MozartMozaicSpecies("carbon-monoxide", 28),
-        # NH3 = MozartMozaicSpecies("ammonia", 17),
+        CO_A = MozartMozaicSpecies("carbon-monoxide", 28),
+        NH3 = MozartMozaicSpecies("ammonia", 17),
         SO2 = MozartMozaicSpecies("sulphur-dioxide", 64),
         NO = MozartMozaicSpecies("nitrogen-oxides", 30),
         NO2 = MozartMozaicSpecies("nitrogen-oxides", 30),
-        # HCL = MozartMozaicSpecies(None, 36.46),
-        # BIGALK = MozartMozaicSpecies("non-methane-vocs", None),
-        # BIGENE = MozartMozaicSpecies("non-methane-vocs", None),
-        # C2H4 = MozartMozaicSpecies("non-methane-vocs", None),
-        # C2H5OH = MozartMozaicSpecies("non-methane-vocs", None),
-        # C2H6 = MozartMozaicSpecies("non-methane-vocs", None),
-        # C3H6 = MozartMozaicSpecies("non-methane-vocs", None),
-        # C3H8 = MozartMozaicSpecies("non-methane-vocs", None),
-        # CH2O = MozartMozaicSpecies("non-methane-vocs", None),
-        # CH3CHO = MozartMozaicSpecies("non-methane-vocs", None),
-        # CH3COCH3 = MozartMozaicSpecies("non-methane-vocs", None),
-        # CH3OH = MozartMozaicSpecies("non-methane-vocs", None),
-        # C2H2 = MozartMozaicSpecies("non-methane-vocs", None),
-        # MEK = MozartMozaicSpecies("non-methane-vocs", None),
-        # TOLUENE = MozartMozaicSpecies("non-methane-vocs", None),
-        # BENZENE = MozartMozaicSpecies("non-methane-vocs", None),
-        # XYLENE = MozartMozaicSpecies("non-methane-vocs", None),
+        HCL = MozartMozaicSpecies(None, 36.46),
+        BIGALK = MozartMozaicSpecies("non-methane-vocs", None),
+        BIGENE = MozartMozaicSpecies("non-methane-vocs", None),
+        C2H4 = MozartMozaicSpecies("non-methane-vocs", None),
+        C2H5OH = MozartMozaicSpecies("non-methane-vocs", None),
+        C2H6 = MozartMozaicSpecies("non-methane-vocs", None),
+        C3H6 = MozartMozaicSpecies("non-methane-vocs", None),
+        C3H8 = MozartMozaicSpecies("non-methane-vocs", None),
+        CH2O = MozartMozaicSpecies("non-methane-vocs", None),
+        CH3CHO = MozartMozaicSpecies("non-methane-vocs", None),
+        CH3COCH3 = MozartMozaicSpecies("non-methane-vocs", None),
+        CH3OH = MozartMozaicSpecies("non-methane-vocs", None),
+        C2H2 = MozartMozaicSpecies("non-methane-vocs", None),
+        MEK = MozartMozaicSpecies("non-methane-vocs", None),
+        TOLUENE = MozartMozaicSpecies("non-methane-vocs", None),
+        BENZENE = MozartMozaicSpecies("non-methane-vocs", None),
+        XYLENE = MozartMozaicSpecies("non-methane-vocs", None),
         ORGJ = MozartMozaicSpecies("organic-carbon", None),
         ECJ = MozartMozaicSpecies("black-carbon", None),
         SO4J = MozartMozaicSpecies("sulphur-dioxide", 64),
     )
     all_species_wrf = sorted(species_info.keys())
+    pm_species_wrf = ("ORGJ", "ECJ", "SO4J")
     all_species_cams = sorted(set(sp.name_cams for _, sp in species_info.items()
                                   if sp.name_cams is not None))
     all_sectors_cams = ("ene", "ind", "res", "tro", "tnr", "ags", "agl", "swd",
@@ -425,6 +471,16 @@ if __name__ == "__main__":
     daily_factors["agl"] = daily_factors["ags"]
 
     # Hourly factors (0h to 23h) from TNO-MACC (van der Gon et al. 2011)
+    # CAMS emission sectors:
+    # - ene: energy
+    # - ind: industry
+    # - res: residential
+    # - tro, tnr: transport
+    # - ags, agl: agriculture
+    # - swd: solid waste disposal
+    # - slv: solvents
+    # - fef: ? TODO figure out what this is
+    # - shp: shipping
     hourly_factors = dict(
         ene = [0.88, 0.79, 0.72, 0.72, 0.71, 0.74, 0.80, 0.92,
                1.08, 1.19, 1.22, 1.21, 1.21, 1.17, 1.15, 1.14,
@@ -460,6 +516,120 @@ if __name__ == "__main__":
     # Conversion factor from organic carbon to organic matter (Shrivastava et
     # al. 2011)
     org_carbon_to_org_matter_anthropo = 1.25
+
+    # VOC emissions in tons (Murrells et al. 2010; Zaveri et al. 1999)
+    #
+    # Emission sectors are:
+    #  - ener: energy production
+    #  - comres_comb: commercial and residential combustion
+    #  - indus_comb: industrial combustion
+    #  - prod: production processes
+    #  - ffuels: extraction and distribution of fossil fuels
+    #  - solvents: solvents
+    #  - road: road transport
+    #  - other_trans: other transports
+    #  - waste: waste treatment and disposal
+    #
+    # VOC speciation (name_mech) is based on Carter (ongoing) and Emmons (2010)
+    #
+    # Emissions are in tonnes (per year? TODO check this)
+    voc_em = pd.DataFrame([
+        [0, 6552, 54, 55044, 0, 41527, 0, 0, 630, "ethanol", "C2H5OH"],
+        [186, 1314, 291, 2936, 41243, 19314, 4667, 228, 53, "butane", "BIGALK"],
+        [242, 3778, 95, 1195, 29762, 0, 1282, 221, 5956, "ethane", "C2H6"],
+        [0, 0, 0, 1486, 0, 28719, 0, 0, 163, "methanol", "CH3OH"],
+        [140, 1530, 139, 1594, 20396, 3777, 430, 152, 5642, "propane", "C3H8"],
+        [94, 689, 89, 3392, 165, 10766, 5431, 1792, 364, "toluene", "TOLUENE"],
+        [49, 7186, 107, 3570, 24, 0, 6107, 3734, 1013, "ethylene", "C2H4"],
+        [18, 6, 15, 1560, 0, 18078, 578, 48, 3, "acetone", "CH3COCH3"],
+        [125, 713, 320, 1593, 15446, 434, 2866, 135, 46, "pentane", "BIGALK"],
+        [57, 1241, 112, 929, 7613, 48, 6095, 318, 34, "2-methylbutane", "BIGALK"],
+        [460, 102, 41, 1916, 58, 12319, 1658, 540, 167, "m-xylene", "XYLENE"],
+        [124, 105, 51, 3226, 8004, 2612, 2613, 84, 240, "hexane", "BIGALK"],
+        [88, 8213, 339, 1584, 541, 0.043, 2218, 2853, 985, "benzene", "BENZENE"],
+        [2002, 673, 527, 292, 39, 24, 3815, 2511, 3761, "formaldehyde", "CH2O"],
+        [0, 0, 0, 575, 0, 12335, 0, 0, 132, "trichloroethene", "BIGENE"],
+        [17, 447, 12, 210, 9084, 973, 1998, 120, 17, "2-methylpropane", "BIGALK"],
+        [0, 0, 0, 636, 0, 11677, 176, 8, 30, "2-butanone", "MEK"],
+        [0, 0, 0, 2086, 0, 9983, 0, 0, 148, "dichloromethane", "BIGALK"],
+        [0.107, 16, 0, 681, 20, 8284, 562, 1345, 0, "decane", "BIGALK"],
+        [0, 0, 0, 193, 0, 10132, 0, 0, 47, "butyl acetate", ""],
+        [59, 1322, 29, 3690, 14, 0.009, 2547, 1092, 58, "propylene", "C3H6"],
+        [0.107, 0.003, 0, 464, 4, 5408, 1906, 453, 0, "1,2 4-trimethylbenzene", "BENZENE"],
+        [134, 35, 25, 1538, 17, 4717, 1278, 348, 270, "ethylbenzene", "BENZENE"],
+        [0, 4, 0, 561, 0, 7717, 0, 0, 36, "2-propanol", ""],
+        [0, 0, 0, 1166, 0, 7010, 0, 0, 50, "ethyl acetate", ""],
+        [18, 281, 1, 284, 7857, 1472, 620, 102, 0, "heptane", "BIGALK"],
+        [0, 0, 0, 673, 0, 5806, 0, 0, 0, "4-methyl-2-pentanone", "MEK"],
+        [0.214, 27, 0, 182, 6907, 1277, 274, 37, 0, "octane", "BIGALK"],
+        [3, 79, 18, 819, 12, 3314, 1282, 417, 130, "p-xylene", "XYLENE"],
+        [102, 58, 13, 660, 27, 3091, 1432, 468, 95, "o-xylene", "XYLENE"],
+        [0, 0, 0, 119, 0, 5661, 0, 0, 272, "tetrachloroethene", "BIGENE"],
+        [0.107, 23, 0, 425, 51, 4994, 140, 338, 0, "nonane", "BIGALK"],
+        [0.107, 0.003, 0, 354, 0, 4317, 0, 639, 0, "undecane", "BIGALK"],
+        [0, 0, 0, 213, 0, 4163, 0, 0, 15, "1-butanol", ""],
+        [0, 59, 0, 575, 178, 0, 1718, 1344, 11, "2-methylpropene", "BIGENE"],
+        [15, 7, 57, 625, 11, 0.177, 2109, 876, 0, "acetylene", "C2H2"],
+        [0.321, 0.009, 0, 681, 0, 0, 1940, 1281, 0, "acetaldehyde", "CH3CHO"],
+        [0, 0, 0, 60, 0, 3535, 0, 0, 86, "1-propanol", ""],
+        [0, 0, 0, 96, 0, 3360, 0, 0, 0, "2-butoxyethanol", ""],
+        [3, 5, 7, 876, 1389, 1236, 0, 6, 114, "2-methylpentane", "BIGALK"],
+        [0, 0, 0, 13, 0, 3364, 0, 0, 0, "dipentene", "BIGENE"],
+        [0.214, 0.006, 0, 164, 0, 1873, 721, 255, 0, "1,3,5-trimethylbenzene", "BENZENE"],
+        [0, 0, 0, 3061, 0, 0, 0, 0, 0, "methyl acetate", ""],
+        [0, 0, 0, 93, 0, 2879, 0, 0, 0, "1-methoxy-2-propanol", ""],
+        [0, 0, 0, 225, 0, 2657, 0, 0, 0, "methylethylbenzene", "BENZENE"],
+        [0.107, 0.003, 0, 155, 0, 1874, 438, 215, 0, "1,2,3-trimethylbenzene", "BENZENE"],
+        [0, 0, 0, 206, 0, 2514, 0, 0, 0, "4-methyldecane", "BIGALK"],
+        [1, 0, 0, 402, 5, 0, 1267, 693, 16, "1,3-butadiene", "BIGENE"],
+        [2, 3, 5, 599, 755, 964, 0, 0, 77, "3-methylpentane", "BIGALK"],
+        [0, 0, 0, 48, 0, 2216, 0, 0, 0, "1-methoxy-2-propyl acetate", ""],
+    ],
+    columns=["ener", "comres_comb", "indus_comb", "prod", "ffuels", "solvents",
+             "road", "other_trans", "waste", "name", "name_mech"]
+    )
+    # Molar masses are in g/mol
+    # TODO it would be nice to define the mol masses directly in the DataFrame
+    voc_em["molmass"] = [
+        46.1, 58.1, 30.1, 32, 44.1, 92.1, 28.1, 58.1, 72.2, 72.2, 106.2, 86.2,
+        78.1, 30, 131.4, 58.12, 72.1, 84.9, 142.3, 116.2, 42.1, 120.2, 106.2,
+        60.1, 88.1, 100.2, 100.2, 114.2, 106.2, 106.2, 165.8, 128.3, 156.3,
+        74.1, 56.1, 26, 44.1, 60.1, 118.2, 86.2, 136.2, 120.2, 74.1, 90.1,
+        120.2, 120.2, 156.3, 54.1, 86.2, 132.2]
+    # Calculate fraction of total for each species and CAMS sector
+    frac1col = lambda c: voc_em[c] / voc_em[c].sum()
+    frac2cols = lambda c1, c2: (voc_em[c1] + voc_em[c2]) / \
+                               (voc_em[c1] + voc_em[c2]).sum()
+    voc_em["cams_ene"] = frac2cols("ener", "ffuels")
+    voc_em["cams_fef"] = frac2cols("ener", "ffuels")
+    voc_em["cams_ind"] = frac2cols("indus_comb", "prod")
+    voc_em["cams_res"] = frac1col("comres_comb")
+    voc_em["cams_tro"] = frac1col("road")
+    voc_em["cams_tnr"] = frac1col("road")
+    voc_em["cams_ags"] = np.zeros([len(voc_em.index)])
+    voc_em["cams_agl"] = np.zeros([len(voc_em.index)])
+    voc_em["cams_swd"] = frac1col("waste")
+    voc_em["cams_slv"] = frac1col("solvents")
+    voc_em["cams_shp"] = frac1col("other_trans")
+
+    # Resources for vertical projection. Emission levels are from WRF_EMIS code
+    # (O. Hodnebrog and T. Pugh). Factors are from the National Atmospheric
+    # Emissions Inventory (T. Pugh)
+    # TODO this needs a more specific reference
+    height_bounds = [0, 50, 150, 250, 400]
+    height_factors = dict(
+        ene = np.array([0.1, 0.2, 0.3, 0.4]),
+        ind = np.array([0.5, 0.5, 0.0, 0.0]),
+        res = np.array([0.5, 0.5, 0.0, 0.0]),
+        tro = np.array([1.0, 0.0, 0.0, 0.0]),
+        tnr = np.array([1.0, 0.0, 0.0, 0.0]),
+        ags = np.array([1.0, 0.0, 0.0, 0.0]),
+        agl = np.array([1.0, 0.0, 0.0, 0.0]),
+        swd = np.array([0.8, 0.2, 0.0, 0.0]),
+        slv = np.array([1.0, 0.0, 0.0, 0.0]),
+        fef = np.array([1.0, 0.0, 0.0, 0.0]),
+        shp = np.array([1.0, 0.0, 0.0, 0.0]),
+    )
 
     ## Prepare input files and grid information (open all the connections)
 
@@ -502,6 +672,15 @@ if __name__ == "__main__":
         x_cams, y_cams = ll2xy(lon_cams, lat_cams)
         x_cams_bdy, y_cams_bdy = ll2xy(lon_cams_bdy, lat_cams_bdy)
 
+        # Prepare vertical projection
+        # TODO add units check of PHB et HGT
+        if args.nlevels+1 > nc_grid["PHB"].shape[2]:
+            raise ValueError("Not enough vertical layers in WRF domain file.")
+        z_wrf = nc_grid["PHB"][0,:args.nlevels+1,:,:] / 9.81
+        z_wrf[0,:,:] = 0
+        for i in range(1,args.nlevels+1):
+            z_wrf[i,:,:] -= nc_grid["HGT"][0,:,:]
+
         # Calculate the spatial mapping (this is the time consuming operation)
         filepath = __file__[:-3] + "_mapping_d" + domain + ".json"
         try:
@@ -533,29 +712,72 @@ if __name__ == "__main__":
 
         def get_factor(species, units, sector, time):
             """Return multiplicative factor for given emissions and time."""
+            # Speciation
+            try:
+                factor = dict(ORGJ=org_carbon_to_org_matter_anthropo,
+                              NO=frac_NO_anthropo,
+                              NO2=frac_NO2_anthropo,
+                              SO4J=frac_SO4_anthropo,
+                              SO2=frac_SO2_anthropo)[species]
+            except KeyError:
+                if species_info[species].name_cams == "non-methane-vocs":
+                    idx = (voc_em.name_mech == species)
+                    if sum(idx) == 0:
+                        return 0
+                    col = "cams_"+sector
+                    factor = (voc_em[col][idx]/voc_em.molmass[idx]).sum()*1000
+                    units = {"kg m-2 s-1": "mol m-2 s-1"}[units]
+                else:
+                    factor = 1
             # Unit conversion
-            if species in ("ECJ", "ORGJ", "SO4J") and units == "kg m-2 s-1":
-                factor = 1e9
+            if species in pm_species_wrf and units == "kg m-2 s-1":
+                factor *= 1e9
                 units = "ug m-2 s-1"
+            elif units == "mol m-2 s-1":
+                factor *= 1e6 * 3600
+                units = "mol km-2 h-1"
             elif units == "kg m-2 s-1":
-                factor = 1e9 * 3600 / species_info[species_wrf].molmass
+                factor *= 1e9 * 3600 / species_info[species].molmass
                 units = "mol km-2 h-1"
             else:
                 raise ValueError("Unexpected units: %s." % units)
-            # Speciation
-            try:
-                factor *= dict(ORGJ=org_carbon_to_org_matter_anthropo,
-                               NO=frac_NO_anthropo,
-                               NO2=frac_NO2_anthropo,
-                               SO4J=frac_SO4_anthropo,
-                               SO2=frac_SO2_anthropo)[species]
-            except KeyError:
-                pass
             # Temporal projection (time of day and day of week)
             factor *= daily_factors[sector][time.weekday()]
             if args.period == "hour":
                 factor = get_hourly_factors(time.hour, sector) * factor
             return factor, units
+
+        def vertical_projection(em, sector):
+            """Return given emissions after vertical projection.
+
+            Input array is a 2D array, whereas output array in a 3D array.
+
+            """
+            factors = height_factors[sector]
+            out = np.zeros((args.nlevels,) + em.shape)
+            for b, z in product(range(len(height_bounds)-1),
+                                range(args.nlevels)):
+                bottom, top = height_bounds[b:b+2]
+                mini = np.maximum(z_wrf[z,:,:], bottom)
+                maxi = np.minimum(z_wrf[z+1,:,:], top)
+                overlap = maxi - mini
+                idx = (overlap > 0)
+                fac = factors[b] / (top-bottom)
+                out[z,idx] += overlap[idx] * fac * em[idx]
+            return out
+
+        def process_emissions_zero(species_wrf, ncs_wrf):
+            """Process emissions for given species (set all values to 0)."""
+            f_datestring = "%Y-%m-%d_%H:%M:%S"
+            time = start
+            if species_wrf in pm_species_wrf:
+                units_wrf = "ug m-2 s-1"
+            else:
+                units_wrf = "mol km-2 h-1"
+            while time <= end:
+                nc_wrf = get_wrf_emissions_file(domain, time, ncs_wrf, nc_grid)
+                var = get_wrf_emissions_variable(nc_wrf, species_wrf, units_wrf)
+                time += period
 
         def process_emissions(species_wrf, sector, ncs_wrf):
             """Process emissions for given species and sectors."""
@@ -573,8 +795,6 @@ if __name__ == "__main__":
             idx_old = None
             time = start
             while time <= end:
-                time_f = time.strftime(f_datestring)
-                filepath = "wrfchemi_d%s_%s" % (domain, time_f)
                 factor, units_wrf = get_factor(species_wrf, units_cams,
                                                sector, time)
                 nc_wrf = get_wrf_emissions_file(domain, time, ncs_wrf, nc_grid)
@@ -584,21 +804,20 @@ if __name__ == "__main__":
                     em_in = nc_cams[sector][idx,:,:]
                     # Fix unrealistic NH3 high-lat agricultural emissions
                     if sector == "agl" and species_cams == "ammonia":
-                        em_in[lat_in>72] = 0
+                        em_in[lat_cams>72] = 0
                     em_out = remap(em_in, mapping)
-                var[0,:,:] += em_out * factor
+                var[0,:,:,:] += vertical_projection(em_out * factor, sector)
                 idx_old = idx
                 time += period
 
         # Here is the loop that actually processes emissions
         ncs_wrf = dict()
         for species_wrf, sector in product(all_species_wrf, all_sectors_cams):
+            print("Process species %s, sector %s" % (species_wrf, sector))
             species_cams = species_info[species_wrf].name_cams
             if species_cams is None:
-                # TODO There is no available data, so set emissions to zero
-                pass
+                process_emissions_zero(species_wrf, ncs_wrf)
             else:
-                print("Process species %s, sector %s" % (species_wrf, sector))
                 process_emissions(species_wrf, sector, ncs_wrf)
 
         nc_grid.close()

@@ -54,7 +54,7 @@ def test__unique_index__repeated_value():
     with raises(ValueError):
         tt.unique_index(a, 21)
 
-## calc_cellweights
+## calc_cellweights (optimized and brute force versions)
 
 x_bdy = np.array([list(range(6)) for i in range(7)])
 y_bdy = np.array([[i]*6 for i in range(6, -1, -1)])
@@ -74,3 +74,18 @@ def test__calc_cellweights__regular_square_grid():
               tt.CellWeight(0, 1, 0.2), tt.CellWeight(1, 1, 0.2),
               tt.CellWeight(0, 2, 0.1), tt.CellWeight(1, 2, 0.1)]
     assert set(tt.calc_cellweights(x, y, x_bdy, y_bdy, polygon)) == set(answer)
+
+def test__calc_cellweights_bruteforce__regular_square_grid():
+    # Be careful, the order of the elements in the answer should not matter
+    polygon = Polygon([(1,2), (1,3), (2,3), (2,2)])
+    function = tt.calc_cellweights_bruteforce
+    answer = [tt.CellWeight(3, 1, 1)]
+    assert function(x_bdy, y_bdy, polygon) == answer
+    polygon = Polygon([(1,2), (1,3), (3,3), (3,2)])
+    answer = [tt.CellWeight(3, 1, 0.5), tt.CellWeight(3, 2, 0.5)]
+    assert set(function(x_bdy, y_bdy, polygon)) == set(answer)
+    polygon = Polygon([(0,4), (0,6), (2.5,6), (2.5,4)])
+    answer = [tt.CellWeight(0, 0, 0.2), tt.CellWeight(1, 0, 0.2),
+              tt.CellWeight(0, 1, 0.2), tt.CellWeight(1, 1, 0.2),
+              tt.CellWeight(0, 2, 0.1), tt.CellWeight(1, 2, 0.1)]
+    assert set(function(x_bdy, y_bdy, polygon)) == set(answer)
