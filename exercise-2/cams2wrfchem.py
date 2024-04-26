@@ -174,8 +174,8 @@ def polygon_from_center(xc, yc, dx, dy):
 
 def surrounding_cells(i, j, nrows, ncols):
     """Return the list of cells surrounding [i,j] (wrap around)."""
-    return [(0 if x < 0 else (x if x < nrows else nrows-1),
-             0 if y < 0 else (y if y < ncols else ncols-1))
+    return [(nrows-1 if x < 0 else (x if x < nrows else 0),
+             ncols-1 if y < 0 else (y if y < ncols else 0))
             for x, y in product(range(i-1,i+2), range(j-1,j+2))
             if (x != i or y != j)]
 
@@ -517,7 +517,7 @@ if __name__ == "__main__":
     # al. 2011)
     org_carbon_to_org_matter_anthropo = 1.25
 
-    # VOC emissions in tons (Murrells et al. 2010; Zaveri et al. 1999)
+    # VOC emissions in tons (Murrells et al. 2010)
     #
     # Emission sectors are:
     #  - ener: energy production
@@ -530,7 +530,8 @@ if __name__ == "__main__":
     #  - other_trans: other transports
     #  - waste: waste treatment and disposal
     #
-    # VOC speciation (name_mech) is based on Carter (ongoing) and Emmons (2010)
+    # VOC speciation (name_mech) is based on Carter (ongoing), Emmons (2010),
+    # and Zaveri & Peters (1999)
     #
     # Emissions are in tonnes (per year? TODO check this)
     voc_em = pd.DataFrame([
