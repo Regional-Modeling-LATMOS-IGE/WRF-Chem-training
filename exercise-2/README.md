@@ -48,3 +48,7 @@ These emissions are processed with the `megan_bio_emiss` preprocessor, using the
 # Namelists
 The main way you will set options and decide how you will use the WRF modeling system and preprocessing system is through namelists.
 
+# Model version
+
+The model version of WRF-Chem we will use for this exercise can be found on dahu at `/bettik/PROJECTS/pr-regionalchem/COMMON/models/WRF-Chem-Polar-dev_SAV_050324/`
+
