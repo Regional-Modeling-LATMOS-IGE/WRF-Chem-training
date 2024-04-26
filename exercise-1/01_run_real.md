@@ -4,6 +4,7 @@
 
 The scripts and parameter files needed to run *real* for this exercise are located on dahu here: `/bettik/PROJECTS/pr-regionalchem/laperer/WRFChem_training/exercise-1/01_run_real/`.
 Please copy/paste this folder to your home directory on dahu, from where you will launch the runs.
+
 - `namelist.input.2019` is the parameter file for defining all WRF options. This file should be identical to the one that will be used in the next step to run WRF.
 - `jobscript_real.sh` is the script that will set the paths, load the libraries and launch `real.exe`
 - the other files in the folder are parameter files that do not need to be modified for our exercise
