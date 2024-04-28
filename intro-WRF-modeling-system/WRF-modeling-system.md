@@ -13,7 +13,7 @@ The Weather Research and Forecasting Model (WRF) is a numerical weather predicti
 
 
 # WRF code distribution
-WRF is distrubted at:
+WRF is distributed at:
 > https://github.com/wrf-model/WRF
 
 The current version of WRF and WRF-Chem are distributed together, if you are running WRF vs. WRF-Chem depends on how you compile the model and your WRF namelist (main input file) and other input files provided.
@@ -37,7 +37,7 @@ with MOSAIC 4-bin aerosols, original publication of this aerosol model at
 
 The coupling of MOZART-MOSAIC 4 bin aerosol scheme is described at
 
-> *GET DOC WHEN NCAR SITE IS BACK UP*
+> https://www2.acom.ucar.edu/sites/default/files/documents/MOZART_MOSAIC_V3.6.readme_dec2016.pdf
 
 MOSAIC aerosol physics and chemistry are developed by a joint collaboration between PNNL and NCAR and the MOZART gas phase chemistry scheme is developed at NCAR.
 
