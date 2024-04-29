@@ -39,6 +39,10 @@ Continue with Exercise #1
 - Running WRF
 - Plotting WRF output
 
+### 15:00h
+
+SIESTE
+
 ### 15:00h - 17:00h
 - Continue with Exercise #1 for those who have not completed a WRF run
 - Or if completed, work on setting up your own domain for your case working with a trainer
