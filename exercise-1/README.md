@@ -86,7 +86,7 @@ The parameter files, including the scripts to launch simulations, can be found t
 
 ## Running the tutorial
 
-Deatiled instructions for the exercise are given in the dedicated directories here. Start with [00_run_wps](00_run_wps), then [01_run_real](01_run_real), and finally [02_run_WRF](02_run_WRF).
+Deatiled instructions for the exercise are given in the dedicated directories here. Start with [00_run_wps.md](00_run_wps), then [01_run_real.md](01_run_real), and finally [02_run_WRF.md](02_run_WRF).
 
 
 ## Plot WRF output
