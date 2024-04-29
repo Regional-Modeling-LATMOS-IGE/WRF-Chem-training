@@ -114,7 +114,7 @@ The first steps are adapted from [the official GRICAD documentation](https://gri
       ```
     - Open the Jupyter notebook on your browser. From a local shell :
       ```
-      ssh -fNL 8888:node_name:8888 dahu.ciment
+      ssh -NL 8888:node_name:8888 dahu.ciment
       ```
       The name of the node is given in the information of Jupyter notebook command. Here it is dahu38, also change the number 8888 by the one corresponding to the URL.
     - When the ssh tunnel is setup, you can open the Jupyter notebook in your browser with the previous URL with the name of the node replaced by localhost. In this case :
