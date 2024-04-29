@@ -75,7 +75,7 @@ The first steps are adapted from [the official GRICAD documentation](https://gri
       ```
       Add to the line with package names: "numpy ipython virtualenv pip notebook" the python package you need. For this training, you can add those package:
       ```
-      numpy ipython virtualenv pip notebook xarray matplotlib cartopy netcdf4 pyproj shapely pandas geopy
+      numpy ipython virtualenv pip notebook xarray matplotlib cartopy netcdf4 pyproj shapely pandas geopy dask
       ```
       Then download your new python environment :
       ```
