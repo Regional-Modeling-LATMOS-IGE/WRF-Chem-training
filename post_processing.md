@@ -6,3 +6,5 @@
 - `conda install conda-forge::ncview`
 
 - set up conda environment / jupyter notebook (https://gricad-doc.univ-grenoble-alpes.fr/notebook/hpc/)
+
+Note: to allow ncview to pop up, you need to connect using "ssh -A -Y username@trinity.univ-grenoble-alpes.fr"
