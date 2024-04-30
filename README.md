@@ -76,6 +76,10 @@ Start of Exercise #2
 ### 12:00h - 13:00h
 Lunch provided on site
 
+### 13h
+
+SIESTE
+
 ### 13:00h - 15:00h
 Continue with Exercise #2
 - Running WRF-Chem
